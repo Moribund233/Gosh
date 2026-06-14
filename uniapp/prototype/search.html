@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=393, initial-scale=1, maximum-scale=1">
+<title>搜索 — 暖食集</title>
+<link rel="stylesheet" href="css/wechat-shop.css">
+<style>
+.search-page-header {
+  background: var(--surface);
+  padding: 8px var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.search-page-header .search-bar { flex: 1; }
+.search-page-header .cancel { font-size: var(--text-sm); color: var(--fg); white-space: nowrap; }
+
+.history-section {
+  padding: var(--space-4);
+}
+.history-section .header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-3);
+}
+.history-section .header h3 { font-size: var(--text-lg); font-weight: 600; }
+.history-section .header .clear { font-size: var(--text-sm); color: var(--muted); }
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.tag-cloud .tag-item {
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color var(--motion-fast), color var(--motion-fast);
+}
+.tag-cloud .tag-item:active { border-color: var(--accent); color: var(--accent); }
+
+.hot-section {
+  padding: 0 var(--space-4) var(--space-4);
+}
+.hot-section h3 { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--space-3); }
+
+.hot-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  font-size: var(--text-sm);
+}
+.hot-item .rank {
+  width: 20px; text-align: center;
+  font-weight: 700; color: var(--muted);
+}
+.hot-item .rank.top3 { color: var(--accent); }
+.hot-item .name { flex: 1; }
+.hot-item .hotness { font-size: var(--text-xs); color: var(--meta); }
+
+/* 搜索结果 */
+.search-results { display: none; padding: var(--space-3) var(--space-4); }
+.search-results.show { display: block; }
+.search-results .result-header { font-size: var(--text-sm); color: var(--muted); margin-bottom: var(--space-3); }
+.search-results .product-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="dynamic-island"><span class="cam"></span></div>
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 9l4 4-4 4"/><path d="M7 17h10l4-4-4-4H7"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </span>
+  </div>
+
+  <div class="page-content">
+    <!-- 搜索框 -->
+    <div class="search-page-header">
+      <div class="search-bar">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" style="flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="searchInput" placeholder="搜索美食、品牌、分类…" onkeydown="doSearch(event)">
+      </div>
+      <span class="cancel" onclick="location.href='home.html'">取消</span>
+    </div>
+
+    <!-- 搜索前默认内容 -->
+    <div id="defaultContent">
+      <!-- 历史搜索 -->
+      <div class="history-section">
+        <div class="header">
+          <h3>历史搜索</h3>
+          <span class="clear" onclick="clearHistory()">清空</span>
+        </div>
+        <div class="tag-cloud" id="historyTags">
+          <span class="tag-item" onclick="quickSearch(this)">五常大米</span>
+          <span class="tag-item" onclick="quickSearch(this)">牛肉干</span>
+          <span class="tag-item" onclick="quickSearch(this)">有机食品</span>
+          <span class="tag-item" onclick="quickSearch(this)">咖啡</span>
+          <span class="tag-item" onclick="quickSearch(this)">蓝莓</span>
+        </div>
+      </div>
+
+      <!-- 热搜 -->
+      <div class="hot-section">
+        <h3>🔥 热门搜索</h3>
+        <div class="hot-item">
+          <span class="rank top3">1</span>
+          <span class="name">五常大米</span>
+          <span class="hotness">10万+ 人搜索</span>
+        </div>
+        <div class="hot-item">
+          <span class="rank top3">2</span>
+          <span class="name">黑猪肉脯</span>
+          <span class="hotness">8.6万+ 人搜索</span>
+        </div>
+        <div class="hot-item">
+          <span class="rank top3">3</span>
+          <span class="name">生吐司</span>
+          <span class="hotness">6.2万+ 人搜索</span>
+        </div>
+        <div class="hot-item">
+          <span class="rank">4</span>
+          <span class="name">云南蓝莓</span>
+          <span class="hotness">4.8万+ 人搜索</span>
+        </div>
+        <div class="hot-item">
+          <span class="rank">5</span>
+          <span class="name">挂耳咖啡</span>
+          <span class="hotness">3.5万+ 人搜索</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 搜索结果 -->
+    <div class="search-results" id="searchResults">
+      <div class="result-header" id="resultCount">找到 0 个商品</div>
+      <div class="product-grid" id="resultGrid"></div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const allProducts = [
+  { name: '有机五常大米 5kg', price: 49.9, original: 69.9, emoji: '🍚' },
+  { name: '云南高山蓝莓 125g×2盒', price: 29.9, original: 45.0, emoji: '🫐' },
+  { name: '黑猪肉脯 200g', price: 32.9, original: 49.9, emoji: '🥩' },
+  { name: '日式生吐司 400g', price: 19.9, original: 28.0, emoji: '🍞' },
+  { name: '贵州酸汤粉 3盒装', price: 24.9, original: 39.9, emoji: '🍜' },
+  { name: '哥伦比亚挂耳咖啡 10包', price: 39.9, original: 58.0, emoji: '☕' },
+  { name: '有机亚麻籽油 500ml', price: 59.9, original: 79.9, emoji: '🫒' },
+  { name: '手工芝麻核桃糕 250g', price: 22.9, original: 35.0, emoji: '🍪' },
+  { name: '精选腰果仁 200g', price: 35.9, original: 49.9, emoji: '🥜' },
+  { name: '冻干草莓酸奶块 100g', price: 18.9, original: 29.9, emoji: '🍓' },
+  { name: '新疆阿克苏苹果 5斤装', price: 39.9, original: 55.0, emoji: '🍎' },
+  { name: '每日坚果混合装 30包', price: 79.9, original: 99.0, emoji: '🥜' },
+];
+
+function doSearch(e) {
+  if (e.key !== 'Enter') return;
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) return;
+
+  const results = allProducts.filter(p => p.name.includes(q));
+  const defaultContent = document.getElementById('defaultContent');
+  const searchResults = document.getElementById('searchResults');
+  const grid = document.getElementById('resultGrid');
+  const count = document.getElementById('resultCount');
+
+  if (results.length > 0) {
+    defaultContent.style.display = 'none';
+    searchResults.classList.add('show');
+    count.textContent = `找到 ${results.length} 个商品`;
+    grid.innerHTML = results.map(p => `
+      <a class="product-card" href="product-detail.html">
+        <div class="img-wrap"><div class="img-placeholder"><span style="font-size:36px">${p.emoji}</span></div></div>
+        <div class="info">
+          <div class="name">${p.name}</div>
+          <div class="price"><span class="unit">¥</span>${p.price} <span class="original">¥${p.original}</span></div>
+        </div>
+      </a>
+    `).join('');
+
+    // 添加到历史
+    const tags = document.getElementById('historyTags');
+    const existing = Array.from(tags.querySelectorAll('.tag-item')).map(t => t.textContent);
+    if (!existing.includes(q)) {
+      const tag = document.createElement('span');
+      tag.className = 'tag-item';
+      tag.textContent = q;
+      tag.onclick = function() { quickSearch(this); };
+      tags.prepend(tag);
+    }
+  } else {
+    count.textContent = `未找到"${q}"相关的商品`;
+    grid.innerHTML = '';
+    defaultContent.style.display = 'none';
+    searchResults.classList.add('show');
+  }
+}
+
+function quickSearch(el) {
+  document.getElementById('searchInput').value = el.textContent;
+  // trigger search
+  const event = new KeyboardEvent('keydown', { key: 'Enter' });
+  document.getElementById('searchInput').dispatchEvent(event);
+}
+
+function clearHistory() {
+  document.getElementById('historyTags').innerHTML = '';
+}
+</script>
+</body>
+</html>

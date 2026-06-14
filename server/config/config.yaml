@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  mode: debug
+
+database:
+  driver: sqlite
+  path: gosh.db
+  host: ""
+  port: 0
+  user: ""
+  password: ""
+  dbname: ""
+  sslmode: ""
+
+jwt:
+  secret: gosh-dev-secret
+  expire_hour: 72
+
+upload:
+  dir: storage/upload
+  max_size: 10
+
+logger:
+  level: debug
+  filename: logs/gosh.log
+  max_size: 100
+  max_backups: 3
+  max_age: 7

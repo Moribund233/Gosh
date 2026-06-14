@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=393, initial-scale=1, maximum-scale=1">
+<title>购物车 — 暖食集</title>
+<link rel="stylesheet" href="css/wechat-shop.css">
+<style>
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.cart-checkbox {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; cursor: pointer;
+  transition: all var(--motion-fast);
+}
+.cart-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+.cart-checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
+
+.cart-item .thumb {
+  width: 72px; height: 72px; border-radius: var(--radius-md);
+  background: #F8F8F8; display: flex; align-items: center; justify-content: center;
+  font-size: 32px; flex-shrink: 0;
+}
+.cart-item .detail { flex: 1; min-width: 0; }
+.cart-item .detail .name { font-size: var(--text-sm); font-weight: 500; }
+.cart-item .detail .spec { font-size: var(--text-xs); color: var(--muted); margin-top: 2px; }
+.cart-item .detail .bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: var(--space-2);
+}
+.cart-item .detail .price { font-size: var(--text-lg); font-weight: 700; color: var(--price-red); }
+.cart-item .detail .price .unit { font-size: var(--text-xs); }
+
+/* 店铺头 */
+.shop-header {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  font-size: var(--text-sm); font-weight: 600;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 底部结算栏 */
+.cart-bottom {
+  position: absolute;
+  bottom: 72px;
+  left: 0; right: 0;
+  height: 52px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  gap: var(--space-3);
+  z-index: 50;
+}
+.cart-bottom .total {
+  flex: 1;
+  text-align: right;
+  font-size: var(--text-sm);
+}
+.cart-bottom .total .amount {
+  font-size: 22px; font-weight: 700; color: var(--price-red);
+}
+.cart-bottom .total .amount .unit { font-size: 14px; }
+.cart-bottom .btn-checkout {
+  background: var(--accent); color: #fff;
+  border-radius: var(--radius-pill);
+  padding: 10px var(--space-6);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: transform var(--motion-fast);
+}
+.cart-bottom .btn-checkout:active { transform: scale(0.96); }
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="dynamic-island"><span class="cam"></span></div>
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 9l4 4-4 4"/><path d="M7 17h10l4-4-4-4H7"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </span>
+  </div>
+
+  <div class="nav-bar">
+    <div class="back" onclick="history.back()">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="title">购物车</div>
+    <div class="action" style="font-size:var(--text-sm);color:var(--muted);width:auto">编辑</div>
+  </div>
+
+  <div class="page-content" style="padding-bottom:130px">
+    <!-- 店铺 -->
+    <div class="shop-header">
+      <div class="cart-checkbox checked" onclick="this.classList.toggle('checked')"></div>
+      <span>暖食集 · 官方旗舰店</span>
+    </div>
+
+    <!-- 购物车商品列表 -->
+    <div id="cartItems"></div>
+
+    <!-- 推荐 -->
+    <div class="section-header">
+      <h2>你可能还喜欢</h2>
+    </div>
+    <div class="scroll-x" style="padding-bottom:var(--space-4)">
+      <div class="product-card">
+        <div class="img-wrap"><div class="img-placeholder"><span style="font-size:36px">🍪</span></div></div>
+        <div class="info">
+          <div class="name">手工芝麻核桃糕 250g</div>
+          <div class="price"><span class="unit">¥</span>22.9</div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="img-wrap"><div class="img-placeholder"><span style="font-size:36px">☕</span></div></div>
+        <div class="info">
+          <div class="name">哥伦比亚挂耳咖啡 10包</div>
+          <div class="price"><span class="unit">¥</span>39.9</div>
+        </div>
+      </div>
+      <div class="product-card">
+        <div class="img-wrap"><div class="img-placeholder"><span style="font-size:36px">🫐</span></div></div>
+        <div class="info">
+          <div class="name">云南高山蓝莓 125g×2盒</div>
+          <div class="price"><span class="unit">¥</span>29.9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部结算 -->
+  <div class="cart-bottom">
+    <div class="cart-checkbox checked" onclick="this.classList.toggle('checked'); updateTotal();"></div>
+    <span style="font-size:var(--text-sm)">全选</span>
+    <div class="total">
+      合计：<span class="amount"><span class="unit">¥</span><span id="totalAmount">0</span></span>
+    </div>
+    <button class="btn-checkout" onclick="location.href='checkout.html'">结算 (3)</button>
+  </div>
+
+  <div class="tab-bar" style="bottom:0">
+    <div class="tab-item" onclick="location.href='home.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="location.href='categories.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path d="M6 6h.008v.008H6V6z"/></svg>
+      <span>分类</span>
+    </div>
+    <div class="tab-item active" onclick="location.href='cart.html'">
+      <div class="tab-icon-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+        <span class="badge-dot"></span>
+      </div>
+      <span>购物车</span>
+    </div>
+    <div class="tab-item" onclick="location.href='orders.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+      <span>订单</span>
+    </div>
+    <div class="tab-item" onclick="location.href='profile.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+      <span>我的</span>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const cartData = [
+  { emoji: '🍚', name: '有机五常大米 5kg', spec: '5kg/袋', price: 49.9, qty: 1 },
+  { emoji: '🥩', name: '黑猪肉脯 200g', spec: '200g/袋', price: 32.9, qty: 2 },
+  { emoji: '🍪', name: '手工芝麻核桃糕 250g', spec: '250g/盒', price: 22.9, qty: 1 },
+];
+
+const container = document.getElementById('cartItems');
+cartData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'cart-item';
+  div.innerHTML = `
+    <div class="cart-checkbox checked" onclick="this.classList.toggle('checked'); updateTotal();"></div>
+    <div class="thumb">${item.emoji}</div>
+    <div class="detail">
+      <div class="name">${item.name}</div>
+      <div class="spec">${item.spec}</div>
+      <div class="bottom">
+        <span class="price"><span class="unit">¥</span>${item.price}</span>
+        <div class="qty-control">
+          <button onclick="changeQty(this, -1)">−</button>
+          <span class="qty">${item.qty}</span>
+          <button onclick="changeQty(this, 1)">+</button>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+function changeQty(btn, delta) {
+  const qtySpan = btn.parentElement.querySelector('.qty');
+  let v = parseInt(qtySpan.textContent) + delta;
+  if (v < 1) v = 1;
+  qtySpan.textContent = v;
+  updateTotal();
+}
+
+function updateTotal() {
+  const items = document.querySelectorAll('.cart-item');
+  let total = 0;
+  let count = 0;
+  items.forEach((item, i) => {
+    const cb = item.querySelector('.cart-checkbox');
+    if (cb.classList.contains('checked')) {
+      total += cartData[i].price * parseInt(item.querySelector('.qty').textContent);
+      count++;
+    }
+  });
+  document.getElementById('totalAmount').textContent = total.toFixed(1);
+  document.querySelector('.btn-checkout').textContent = `结算 (${count})`;
+}
+
+updateTotal();
+</script>
+</body>
+</html>

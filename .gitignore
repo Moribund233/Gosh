@@ -1,0 +1,45 @@
+# --- Go ---
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+vendor/
+
+# --- Build ---
+server/bin/
+server/server
+
+# --- Database ---
+server/gosh.db
+
+# --- Logs ---
+server/logs/
+
+# --- Uploads ---
+server/storage/upload/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Editor temp ---
+*~
+*.bak
+
+# --- Docker ---
+server/volumes/
+
+# --- Environment ---
+.env
+*.env.local

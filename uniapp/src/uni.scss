@@ -1,0 +1,80 @@
+// ============================================================
+// Gosh Mall Design Tokens — 暖色食品版 (深栗色 + 香槟金)
+// ============================================================
+
+// uView Plus 主题覆盖
+$u-primary: #8B5E3C;
+$u-primary-light: #F5EDE5;
+$u-primary-dark: #6F482B;
+$u-success: #7A9E6D;
+$u-warning: #D4A84B;
+$u-error: #D94A4A;
+$u-info: #B0A090;
+$u-bg-color: #F5F0EB;
+$u-bg-color-white: #FDFBF9;
+
+@import "uview-plus/theme.scss";
+
+// 品牌色
+$uni-color-primary: #8B5E3C;
+$uni-color-primary-hover: #A0704E;
+$uni-color-primary-active: #6F482B;
+$uni-color-primary-light: #F5EDE5;
+$uni-color-gold: #C9A96E;
+$uni-color-gold-light: #F5EFE0;
+
+// 语义色
+$uni-color-success: #7A9E6D;
+$uni-color-warning: #D4A84B;
+$uni-color-error: #D94A4A;
+$uni-color-price: #C94A3A;
+
+// 中性色
+$uni-bg: #F5F0EB;
+$uni-bg-white: #FDFBF9;
+$uni-text-color: #3D2B1F;
+$uni-text-color-grey: #B0A090;
+$uni-text-color-placeholder: #D0C8B8;
+$uni-border-color: #E8E0D5;
+$uni-bg-color-mask: rgba(61, 43, 31, 0.4);
+
+// 字号
+$uni-font-size-xs: 11px;
+$uni-font-size-sm: 13px;
+$uni-font-size-base: 15px;
+$uni-font-size-lg: 16px;
+$uni-font-size-xl: 18px;
+$uni-font-size-2xl: 22px;
+$uni-font-size-3xl: 28px;
+
+// 间距
+$uni-spacing-row-xs: 4px;
+$uni-spacing-row-sm: 8px;
+$uni-spacing-row-base: 12px;
+$uni-spacing-row-lg: 16px;
+$uni-spacing-row-xl: 20px;
+$uni-spacing-row-2xl: 24px;
+
+$uni-spacing-col-xs: 4px;
+$uni-spacing-col-sm: 8px;
+$uni-spacing-col-base: 12px;
+$uni-spacing-col-lg: 16px;
+$uni-spacing-col-xl: 20px;
+$uni-spacing-col-2xl: 24px;
+
+// 圆角
+$uni-border-radius-sm: 4px;
+$uni-border-radius-base: 8px;
+$uni-border-radius-lg: 12px;
+$uni-border-radius-xl: 16px;
+$uni-border-radius-2xl: 20px;
+$uni-border-radius-pill: 9999px;
+
+// 阴影
+$uni-shadow-sm: 0 1px 3px rgba(61, 43, 31, 0.06);
+$uni-shadow-md: 0 2px 8px rgba(61, 43, 31, 0.08);
+$uni-shadow-lg: 0 4px 16px rgba(61, 43, 31, 0.1);
+
+// 动画
+$uni-duration-fast: 200ms;
+$uni-duration-base: 300ms;

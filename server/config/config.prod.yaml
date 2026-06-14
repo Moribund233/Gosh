@@ -1,0 +1,23 @@
+server:
+  port: 8080
+  mode: release
+
+database:
+  driver: postgres
+  host: 127.0.0.1
+  port: 5432
+  user: gosh
+  password: gosh
+  dbname: gosh
+  sslmode: disable
+
+jwt:
+  secret: change-this-in-production
+  expire_hour: 72
+
+logger:
+  level: info
+  filename: logs/gosh.log
+  max_size: 100
+  max_backups: 7
+  max_age: 30

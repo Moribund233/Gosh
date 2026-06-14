@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gosh
+      POSTGRES_PASSWORD: gosh
+      POSTGRES_DB: gosh
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gosh"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  gosh-server:
+    build: .
+    image: gosh-server:latest
+    ports:
+      - "9292:8080"
+    environment:
+      GIN_MODE: release
+      GOSH_SERVER_MODE: release
+      GOSH_DATABASE_DRIVER: postgres
+      GOSH_DATABASE_HOST: postgres
+      GOSH_DATABASE_PORT: 5432
+      GOSH_DATABASE_USER: gosh
+      GOSH_DATABASE_PASSWORD: gosh
+      GOSH_DATABASE_DBNAME: gosh
+      GOSH_DATABASE_SSLMODE: disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

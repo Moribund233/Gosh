@@ -1,0 +1,18 @@
+server:
+  port: 0
+  mode: test
+
+database:
+  driver: sqlite
+  path: ":memory:"
+
+jwt:
+  secret: test-secret
+  expire_hour: 72
+
+logger:
+  level: debug
+  filename: ""
+  max_size: 0
+  max_backups: 0
+  max_age: 0

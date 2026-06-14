@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=393, initial-scale=1, maximum-scale=1">
+<title>暖食集 — 商城首页</title>
+<link rel="stylesheet" href="css/wechat-shop.css">
+<style>
+/* ─── 首页专属 ─── */
+.swiper {
+  margin: var(--space-4) var(--space-5) var(--space-3);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  height: 150px;
+  background: linear-gradient(135deg, #8B5E3C 0%, #A0704E 50%, #C9A96E 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  position: relative;
+}
+.swiper-text { text-align: center; }
+.swiper-text .sub-label {
+  font-size: 10px; letter-spacing: 2px; opacity: 0.7; margin-bottom: 4px;
+}
+.swiper-text h3 { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+.swiper-text p { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+.swiper-dots {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px;
+}
+.swiper-dots span {
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.35);
+  transition: all var(--motion-base);
+}
+.swiper-dots span.active { width: 24px; border-radius: 3px; background: #fff; }
+
+/* 品牌故事区 */
+.brand-story {
+  margin: 0 var(--space-5) var(--space-5);
+  padding: var(--space-5);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.brand-story .logo-mark {
+  width: 56px; height: 56px; border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--accent), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(139,94,60,0.2);
+}
+.brand-story .text { flex: 1; }
+.brand-story .text .title { font-size: 16px; font-weight: 700; }
+.brand-story .text .desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+.brand-story .badge {
+  font-size: 11px; color: var(--gold); font-weight: 600;
+  padding: 4px 10px; border: 1px solid var(--gold); border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.quick-menu {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+.quick-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--fg);
+  padding: var(--space-3) 0;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast);
+  cursor: pointer;
+}
+.quick-menu-item:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.quick-menu-item .icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.quick-menu-item .icon.chestnut { background: var(--accent-light); }
+.quick-menu-item .icon.gold { background: var(--gold-light); }
+.quick-menu-item .icon.green { background: #E8F5E9; }
+.quick-menu-item .icon.pink { background: #FCE4EC; }
+
+.seckill {
+  margin: 0 var(--space-5) var(--space-5);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.seckill-header {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.seckill-header h3 { font-size: var(--text-lg); font-weight: 700; }
+.seckill-timer {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--muted);
+}
+.seckill-timer .num {
+  background: var(--fg); color: #fff;
+  padding: 2px 5px; border-radius: 4px;
+  font-size: 11px; font-weight: 600;
+  animation: countdownPulse 1s ease infinite;
+}
+.seckill-items { display: flex; gap: var(--space-3); overflow-x: auto; padding-bottom: 2px; }
+.seckill-items::-webkit-scrollbar { display: none; }
+.seckill-item { flex-shrink: 0; width: 80px; text-align: center; }
+.seckill-item .img {
+  width: 80px; height: 80px; border-radius: var(--radius-md);
+  background: var(--accent-light); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px; transition: transform var(--motion-fast);
+}
+.seckill-item:active .img { transform: scale(0.95); }
+.seckill-item .price { font-size: 14px; font-weight: 700; color: var(--price-red); }
+.seckill-item .price .original { font-size: 10px; color: var(--meta); text-decoration: line-through; }
+
+.category-nav {
+  display: flex;
+  gap: 0;
+  padding: var(--space-2) var(--space-5);
+  overflow-x: auto;
+  margin-bottom: var(--space-2);
+}
+.category-nav::-webkit-scrollbar { display: none; }
+.category-nav a {
+  flex-shrink: 0;
+  padding: 8px var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  white-space: nowrap;
+  position: relative;
+  transition: color var(--motion-fast);
+}
+.category-nav a.active { color: var(--accent); font-weight: 600; }
+.category-nav a.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 50%;
+  transform: translateX(-50%); width: 20px; height: 3px;
+  background: var(--accent); border-radius: 2px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-5) var(--space-4);
+}
+</style>
+</head>
+<body>
+<div class="phone-frame">
+  <div class="dynamic-island"><span class="cam"></span></div>
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <span class="icons">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 9l4 4-4 4"/><path d="M7 17h10l4-4-4-4H7"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+    </span>
+  </div>
+  <div class="page-content">
+    <!-- 搜索条 -->
+    <div style="padding: 12px var(--space-5) 4px; display: flex; gap: var(--space-2); align-items: center;">
+      <div class="search-bar" onclick="location.href='search.html'" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-pill);padding:10px var(--space-4)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input placeholder="搜索美食、品牌、分类…" readonly>
+      </div>
+    </div>
+
+    <!-- 轮播 -->
+    <div class="swiper anim-fade-in">
+      <div class="swiper-text">
+        <div class="sub-label">WARM FOOD COLLECTION</div>
+        <h3>夏季时令上新</h3>
+        <p>产地直送 · 新鲜蔬果专区 满 99 减 20</p>
+      </div>
+      <div class="swiper-dots">
+        <span class="active"></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- 品牌故事 -->
+    <div class="brand-story anim-fade-in-up">
+      <div class="logo-mark">🌾</div>
+      <div class="text">
+        <div class="title">暖食集 · 从产地到餐桌</div>
+        <div class="desc">甄选全国优质食材，顺丰冷链直达<br>已服务 50 万+ 家庭</div>
+      </div>
+      <span class="badge">安心溯源</span>
+    </div>
+
+    <!-- 快捷入口 (4项) -->
+    <div class="quick-menu anim-stagger">
+      <div class="quick-menu-item anim-fade-in-up" onclick="location.href='categories.html'">
+        <div class="icon chestnut">🍜</div>
+        <span>方便速食</span>
+      </div>
+      <div class="quick-menu-item anim-fade-in-up" onclick="location.href='categories.html'">
+        <div class="icon gold">🥩</div>
+        <span>肉禽蛋品</span>
+      </div>
+      <div class="quick-menu-item anim-fade-in-up" onclick="location.href='categories.html'">
+        <div class="icon green">🥬</div>
+        <span>新鲜时蔬</span>
+      </div>
+      <div class="quick-menu-item anim-fade-in-up" onclick="location.href='categories.html'">
+        <div class="icon pink">🍪</div>
+        <span>零食糕点</span>
+      </div>
+    </div>
+
+    <!-- 限时秒杀 -->
+    <div class="seckill anim-fade-in-up">
+      <div class="seckill-header">
+        <h3>⏰ 限时秒杀</h3>
+        <div class="seckill-timer">
+          <span>距结束</span>
+          <span class="num">02</span><span>:</span>
+          <span class="num">35</span><span>:</span>
+          <span class="num">48</span>
+        </div>
+      </div>
+      <div class="seckill-items">
+        <div class="seckill-item">
+          <div class="img">🍪</div>
+          <div class="price">¥9.9 <span class="original">¥29.9</span></div>
+        </div>
+        <div class="seckill-item">
+          <div class="img">🥩</div>
+          <div class="price">¥39.9 <span class="original">¥69.9</span></div>
+        </div>
+        <div class="seckill-item">
+          <div class="img">🍜</div>
+          <div class="price">¥12.9 <span class="original">¥25.9</span></div>
+        </div>
+        <div class="seckill-item">
+          <div class="img">🥛</div>
+          <div class="price">¥29.9 <span class="original">¥49.9</span></div>
+        </div>
+        <div class="seckill-item">
+          <div class="img">🍫</div>
+          <div class="price">¥19.9 <span class="original">¥39.9</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类导航 -->
+    <div class="brand-heading">
+      <div class="line"></div>
+      <h2>精选好物</h2>
+      <div class="line"></div>
+    </div>
+    <nav class="category-nav">
+      <a href="#" class="active">精选推荐</a>
+      <a href="#">方便速食</a>
+      <a href="#">新鲜水果</a>
+      <a href="#">肉禽蛋品</a>
+      <a href="#">零食糕点</a>
+      <a href="#">乳品烘培</a>
+    </nav>
+
+    <!-- 商品网格 -->
+    <div class="product-grid" id="homeProducts"></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div class="tab-item active" onclick="location.href='home.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="location.href='categories.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
+      <span>分类</span>
+    </div>
+    <div class="tab-item" onclick="location.href='cart.html'">
+      <div class="tab-icon-wrap">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
+        <span class="badge-dot"></span>
+      </div>
+      <span>购物车</span>
+    </div>
+    <div class="tab-item" onclick="location.href='orders.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+      <span>订单</span>
+    </div>
+    <div class="tab-item" onclick="location.href='profile.html'">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+      <span>我的</span>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const products = [
+  { name: '有机五常大米 5kg', price: 49.9, original: 69.9, sales: '2.3万', tag: '热卖', tagClass: 'tag-hot', emoji: '🍚' },
+  { name: '云南高山蓝莓 125g×2盒', price: 29.9, original: 45.0, sales: '1.8万', tag: '时令', tagClass: 'tag-new', emoji: '🫐' },
+  { name: '黑猪肉脯 200g', price: 32.9, original: 49.9, sales: '5.6万', tag: '爆款', tagClass: 'tag-hot', emoji: '🥩' },
+  { name: '日式生吐司 400g', price: 19.9, original: 28.0, sales: '3.2万', tag: '新品', tagClass: 'tag-new', emoji: '🍞' },
+  { name: '贵州酸汤粉 3盒装', price: 24.9, original: 39.9, sales: '1.2万', tag: '特色', tagClass: 'tag-hot', emoji: '🍜' },
+  { name: '哥伦比亚挂耳咖啡 10包', price: 39.9, original: 58.0, sales: '8.9k', tag: '精选', tagClass: 'tag-sale', emoji: '☕' },
+  { name: '有机亚麻籽油 500ml', price: 59.9, original: 79.9, sales: '6.5k', tag: '健康', tagClass: 'tag-new', emoji: '🫒' },
+  { name: '手工芝麻核桃糕 250g', price: 22.9, original: 35.0, sales: '4.1万', tag: '手作', tagClass: 'tag-hot', emoji: '🍪' },
+];
+
+const grid = document.getElementById('homeProducts');
+products.forEach((p, i) => {
+  const card = document.createElement('a');
+  card.href = 'product-detail.html';
+  card.className = 'product-card anim-fade-in-up';
+  card.style.animationDelay = `${0.1 + i * 0.05}s`;
+  card.innerHTML = `
+    <div class="img-wrap"><div class="img-placeholder"><span style="font-size:36px">${p.emoji}</span></div></div>
+    <div class="info">
+      <div class="name">${p.name}</div>
+      <div class="price"><span class="unit">¥</span>${p.price} <span class="original">¥${p.original}</span></div>
+      <div class="sales" style="display:flex;align-items:center;gap:4px">
+        <span class="tag ${p.tagClass}">${p.tag}</span>
+        <span>已售 ${p.sales}</span>
+      </div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
