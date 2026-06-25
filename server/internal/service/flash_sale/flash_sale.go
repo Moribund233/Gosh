@@ -1,11 +1,13 @@
 package flash_sale
 
 import (
+	"context"
 	"time"
 
 	"gosh/internal/dto/response"
 	"gosh/internal/model"
 	repo "gosh/internal/repository/flash_sale"
+	"gosh/pkg/cache"
 )
 
 type Service interface {
@@ -21,6 +23,21 @@ func New() Service {
 }
 
 func (s *service) GetActive() ([]response.FlashSaleResponse, error) {
+	c := cache.Default()
+	if c != nil {
+		var result []response.FlashSaleResponse
+		err := c.Remember(context.Background(), "cache:flash_sale:active", 30*time.Second, func() (interface{}, error) {
+			return s.buildActiveList()
+		}, &result)
+		if err == nil {
+			return result, nil
+		}
+	}
+
+	return s.buildActiveList()
+}
+
+func (s *service) buildActiveList() ([]response.FlashSaleResponse, error) {
 	list, err := s.repo.FindActive()
 	if err != nil {
 		return nil, err

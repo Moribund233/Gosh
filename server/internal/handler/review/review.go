@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gosh/internal/dto/request"
 	svc "gosh/internal/service/review"
+	"gosh/pkg/errcode"
 	"gosh/pkg/response"
 )
 
@@ -17,26 +18,49 @@ func NewHandler() *Handler {
 	return &Handler{svc: svc.New()}
 }
 
+// @Summary Create a review
+// @Description Create a product review
+// @Tags Reviews
+// @Accept json
+// @Produce json
+// @Param body body request.CreateReviewRequest true "Review info"
+// @Success 201 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Security BearerAuth
+// @Router /reviews [post]
 func (h *Handler) Create(c *gin.Context) {
 	var req request.CreateReviewRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.BadRequestWithCode(c, errcode.ErrBadRequest, err.Error())
 		return
 	}
 	userID, _ := c.Get("user_id")
 	resp, err := h.svc.Create(userID.(uint), &req)
 	if err != nil {
-		response.InternalError(c, "create review failed")
+		response.InternalErrorWithCode(c, errcode.ErrInternal, "create review failed")
 		return
 	}
 	response.Created(c, resp)
 }
 
+// @Summary List reviews
+// @Description List reviews for a product with pagination
+// @Tags Reviews
+// @Accept json
+// @Produce json
+// @Param product_id query int true "Product ID"
+// @Param page query int false "Page number"
+// @Param size query int false "Page size"
+// @Success 200 {object} response.Response
+// @Failure 400 {object} response.Response
+// @Failure 500 {object} response.Response
+// @Router /reviews [get]
 func (h *Handler) List(c *gin.Context) {
 	productIDStr := c.Query("product_id")
 	productID, err := strconv.ParseUint(productIDStr, 10, 64)
 	if err != nil {
-		response.BadRequest(c, "invalid product_id")
+		response.BadRequestWithCode(c, errcode.ErrBadRequest, "invalid product_id")
 		return
 	}
 	pageStr := c.Query("page")
@@ -51,7 +75,7 @@ func (h *Handler) List(c *gin.Context) {
 	}
 	list, total, err := h.svc.List(uint(productID), page, size)
 	if err != nil {
-		response.InternalError(c, "list reviews failed")
+		response.InternalErrorWithCode(c, errcode.ErrInternal, "list reviews failed")
 		return
 	}
 	response.Success(c, gin.H{"list": list, "total": total})

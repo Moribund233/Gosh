@@ -13,6 +13,7 @@ vendor/
 # --- Build ---
 server/bin/
 server/server
+server/gosh-server
 
 # --- Database ---
 server/gosh.db
@@ -43,3 +44,10 @@ server/volumes/
 # --- Environment ---
 .env
 *.env.local
+
+# --- Tooling ---
+.codegraph/
+
+# --- Python ---
+__pycache__/
+*.pyc

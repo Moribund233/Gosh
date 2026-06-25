@@ -1,7 +1,10 @@
 package cart
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 	"gosh/internal/dto/request"
@@ -9,7 +12,10 @@ import (
 	"gosh/internal/model"
 	repo "gosh/internal/repository/cart"
 	productRepo "gosh/internal/repository/product"
+	"gosh/pkg/cache"
 )
+
+const CartMaxQuantity = 99
 
 var (
 	ErrCartNotFound    = errors.New("cart item not found")
@@ -39,6 +45,16 @@ func New() Service {
 	}
 }
 
+func cartCacheKey(userID uint) string {
+	return fmt.Sprintf("cache:cart:user:%d", userID)
+}
+
+func invalidateCartCache(userID uint) {
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), cartCacheKey(userID))
+	}
+}
+
 func (s *service) Add(userID uint, req *request.AddCartRequest) (*response.CartItemResponse, error) {
 	sku, err := s.productRepo.FindSKUByID(req.SKUID)
 	if err != nil {
@@ -60,7 +76,8 @@ func (s *service) Add(userID uint, req *request.AddCartRequest) (*response.CartI
 		if err := s.repo.Update(existing); err != nil {
 			return nil, err
 		}
-		return s.toItemResponse(existing, sku), nil
+		invalidateCartCache(userID)
+		return s.toItemResponse(existing, sku, nil), nil
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
@@ -79,13 +96,65 @@ func (s *service) Add(userID uint, req *request.AddCartRequest) (*response.CartI
 	if err := s.repo.Create(cart); err != nil {
 		return nil, err
 	}
-	return s.toItemResponse(cart, sku), nil
+	invalidateCartCache(userID)
+	return s.toItemResponse(cart, sku, nil), nil
 }
 
 func (s *service) List(userID uint) (*response.CartSummaryResponse, error) {
+	c := cache.Default()
+	if c != nil {
+		var result response.CartSummaryResponse
+		err := c.Remember(context.Background(), cartCacheKey(userID), 5*time.Minute, func() (interface{}, error) {
+			return s.buildCartSummary(userID)
+		}, &result)
+		if err == nil {
+			return &result, nil
+		}
+	}
+
+	return s.buildCartSummary(userID)
+}
+
+func (s *service) buildCartSummary(userID uint) (*response.CartSummaryResponse, error) {
 	carts, err := s.repo.FindByUserID(userID)
 	if err != nil {
 		return nil, err
+	}
+	if len(carts) == 0 {
+		return &response.CartSummaryResponse{
+			Items: []response.CartItemResponse{},
+		}, nil
+	}
+
+	skuIDs := make([]uint, len(carts))
+	for i, c := range carts {
+		skuIDs[i] = c.SKUID
+	}
+
+	skus, err := s.productRepo.FindSKUsByIDs(skuIDs)
+	if err != nil {
+		return nil, err
+	}
+	skuMap := make(map[uint]model.ProductSKU, len(skus))
+	for _, sku := range skus {
+		skuMap[sku.ID] = sku
+	}
+
+	productIDs := make([]uint, 0)
+	productIDSet := make(map[uint]bool)
+	for _, sku := range skus {
+		if !productIDSet[sku.ProductID] {
+			productIDs = append(productIDs, sku.ProductID)
+			productIDSet[sku.ProductID] = true
+		}
+	}
+	products, err := s.productRepo.FindByIDs(productIDs)
+	if err != nil {
+		return nil, err
+	}
+	productMap := make(map[uint]model.Product, len(products))
+	for _, p := range products {
+		productMap[p.ID] = p
 	}
 
 	items := make([]response.CartItemResponse, 0)
@@ -95,15 +164,17 @@ func (s *service) List(userID uint) (*response.CartSummaryResponse, error) {
 	allSelected := len(carts) > 0
 
 	for _, c := range carts {
-		sku, skuErr := s.productRepo.FindSKUByID(c.SKUID)
-		if skuErr != nil {
+		sku, ok := skuMap[c.SKUID]
+		if !ok {
 			removed = append(removed, response.RemovedItem{
 				SKUID:  c.SKUID,
 				Reason: "商品已下架或不存在",
 			})
 			continue
 		}
-		if !s.isProductOnline(sku.ProductID) {
+
+		product, ok := productMap[sku.ProductID]
+		if !ok || product.Status != model.ProductStatusOn {
 			removed = append(removed, response.RemovedItem{
 				SKUID:  c.SKUID,
 				Reason: "商品已下架",
@@ -111,7 +182,7 @@ func (s *service) List(userID uint) (*response.CartSummaryResponse, error) {
 			continue
 		}
 
-		item := s.toItemResponse(&c, sku)
+		item := s.toItemResponse(&c, &sku, &product)
 		items = append(items, *item)
 
 		if c.Selected {
@@ -159,9 +230,11 @@ func (s *service) Update(id, userID uint, req *request.UpdateCartRequest) (*resp
 		return nil, err
 	}
 
+	invalidateCartCache(userID)
+
 	sku, _ := s.productRepo.FindSKUByID(cart.SKUID)
 	if sku != nil {
-		return s.toItemResponse(cart, sku), nil
+		return s.toItemResponse(cart, sku, nil), nil
 	}
 	resp := response.ToCartItemResponse(cart)
 	return &resp, nil
@@ -174,12 +247,20 @@ func (s *service) Delete(id, userID uint) error {
 		}
 		return err
 	}
-	return s.repo.Delete(id, userID)
+	if err := s.repo.Delete(id, userID); err != nil {
+		return err
+	}
+	invalidateCartCache(userID)
+	return nil
 }
 
 func (s *service) Select(userID uint, req *request.SelectRequest) error {
 	if req.All != nil {
-		return s.repo.UpdateAllSelected(userID, *req.All)
+		if err := s.repo.UpdateAllSelected(userID, *req.All); err != nil {
+			return err
+		}
+		invalidateCartCache(userID)
+		return nil
 	}
 	if len(req.SKUIDs) > 0 {
 		for _, skuID := range req.SKUIDs {
@@ -187,9 +268,14 @@ func (s *service) Select(userID uint, req *request.SelectRequest) error {
 				return err
 			}
 		}
+		invalidateCartCache(userID)
 		return nil
 	}
-	return s.repo.UpdateAllSelected(userID, req.Select)
+	if err := s.repo.UpdateAllSelected(userID, req.Select); err != nil {
+		return err
+	}
+	invalidateCartCache(userID)
+	return nil
 }
 
 func (s *service) Merge(userID uint, req *request.MergeCartRequest) (*response.CartSummaryResponse, error) {
@@ -216,32 +302,53 @@ func (s *service) Merge(userID uint, req *request.MergeCartRequest) (*response.C
 			})
 		}
 	}
+	invalidateCartCache(userID)
 	return s.List(userID)
 }
 
 func (s *service) Count(userID uint) (int64, error) {
+	c := cache.Default()
+	if c != nil {
+		var summary response.CartSummaryResponse
+		err := c.Get(context.Background(), cartCacheKey(userID), &summary)
+		if err == nil {
+			return int64(summary.TotalCount), nil
+		}
+	}
+
 	return s.repo.Count(userID)
 }
 
 // internal helpers
 
 func (s *service) isProductOnline(productID uint) bool {
-	product, err := s.productRepo.FindByID(productID)
+	online, err := s.productRepo.IsProductOnline(productID)
 	if err != nil {
 		return false
 	}
-	return product.Status == model.ProductStatusOn
+	return online
 }
 
-func (s *service) toItemResponse(cart *model.Cart, sku *model.ProductSKU) *response.CartItemResponse {
-	product, _ := s.productRepo.FindByID(sku.ProductID)
+func (s *service) toItemResponse(cart *model.Cart, sku *model.ProductSKU, product *model.Product) *response.CartItemResponse {
 	image := ""
 	productName := ""
 	online := true
 	if product != nil {
-		image = product.Images
+		image = firstImage(product.Images)
 		productName = product.Name
 		online = product.Status == model.ProductStatusOn
+	} else {
+		p, err := s.productRepo.FindByID(sku.ProductID)
+		if err == nil {
+			image = firstImage(p.Images)
+			productName = p.Name
+			online = p.Status == model.ProductStatusOn
+		}
+	}
+
+	maxBuyable := sku.Stock
+	if maxBuyable > CartMaxQuantity {
+		maxBuyable = CartMaxQuantity
 	}
 
 	return &response.CartItemResponse{
@@ -255,8 +362,16 @@ func (s *service) toItemResponse(cart *model.Cart, sku *model.ProductSKU) *respo
 		Image:       image,
 		Price:       sku.Price,
 		Stock:       sku.Stock,
+		MaxBuyable:  maxBuyable,
 		ProductID:   sku.ProductID,
 		ProductOn:   online,
 		CreatedAt:   cart.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
+}
+
+func firstImage(images []string) string {
+	if len(images) > 0 {
+		return images[0]
+	}
+	return ""
 }

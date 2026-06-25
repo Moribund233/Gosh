@@ -10,9 +10,12 @@ import (
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
+	Redis    RedisConfig    `mapstructure:"redis"`
+	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
 	JWT      JWTConfig      `mapstructure:"jwt"`
 	Upload   UploadConfig   `mapstructure:"upload"`
 	Logger   LoggerConfig   `mapstructure:"logger"`
+	Order    OrderConfig    `mapstructure:"order"`
 }
 
 type ServerConfig struct {
@@ -31,6 +34,21 @@ type DatabaseConfig struct {
 	Path     string `mapstructure:"path"`
 }
 
+type RedisConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Password string `mapstructure:"password"`
+	DB       int    `mapstructure:"db"`
+}
+
+type RabbitMQConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+	VHost    string `mapstructure:"vhost"`
+}
+
 type JWTConfig struct {
 	Secret     string `mapstructure:"secret"`
 	ExpireHour int    `mapstructure:"expire_hour"`
@@ -47,6 +65,10 @@ type LoggerConfig struct {
 	MaxSize    int    `mapstructure:"max_size"`
 	MaxBackups int    `mapstructure:"max_backups"`
 	MaxAge     int    `mapstructure:"max_age"`
+}
+
+type OrderConfig struct {
+	TimeoutMinutes int `mapstructure:"timeout_minutes"`
 }
 
 func (d DatabaseConfig) DSN() string {

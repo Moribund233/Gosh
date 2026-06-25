@@ -67,7 +67,7 @@ func (r *repo) FindUserCoupon(userID, couponID uint) (*model.UserCoupon, error) 
 
 func (r *repo) ListUserCoupons(userID uint) ([]model.UserCoupon, error) {
 	var ucs []model.UserCoupon
-	err := database.DB.Where("user_id = ?", userID).Order("created_at desc").Find(&ucs).Error
+	err := database.DB.Where("user_id = ?", userID).Order("created_at desc").Limit(100).Find(&ucs).Error
 	return ucs, err
 }
 

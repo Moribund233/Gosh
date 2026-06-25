@@ -54,3 +54,30 @@ func NotFound(c *gin.Context, message string) {
 func InternalError(c *gin.Context, message string) {
 	Error(c, http.StatusInternalServerError, message)
 }
+
+func ErrorWithCode(c *gin.Context, httpStatus int, code int, message string) {
+	c.JSON(httpStatus, Response{
+		Code:    code,
+		Message: message,
+	})
+}
+
+func BadRequestWithCode(c *gin.Context, code int, message string) {
+	ErrorWithCode(c, http.StatusBadRequest, code, message)
+}
+
+func NotFoundWithCode(c *gin.Context, code int, message string) {
+	ErrorWithCode(c, http.StatusNotFound, code, message)
+}
+
+func UnauthorizedWithCode(c *gin.Context, code int, message string) {
+	ErrorWithCode(c, http.StatusUnauthorized, code, message)
+}
+
+func ForbiddenWithCode(c *gin.Context, code int, message string) {
+	ErrorWithCode(c, http.StatusForbidden, code, message)
+}
+
+func InternalErrorWithCode(c *gin.Context, code int, message string) {
+	ErrorWithCode(c, http.StatusInternalServerError, code, message)
+}

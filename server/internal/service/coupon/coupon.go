@@ -24,7 +24,7 @@ type Service interface {
 	Create(req *request.CreateCouponRequest) (*response.CouponResponse, error)
 	Receive(userID, couponID uint) (*response.UserCouponResponse, error)
 	GetAvailable(userID uint, amount int64) ([]response.UserCouponResponse, error)
-	Calculate(req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error)
+	Calculate(userID uint, req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error)
 }
 
 type service struct {
@@ -149,8 +149,15 @@ func (s *service) GetAvailable(userID uint, amount int64) ([]response.UserCoupon
 	return available, nil
 }
 
-func (s *service) Calculate(req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error) {
-	coupon, err := s.repo.FindByID(req.CouponID)
+func (s *service) Calculate(userID uint, req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error) {
+	if req.CouponID != nil {
+		return s.calculateSpecific(userID, req)
+	}
+	return s.calculateBest(userID, req)
+}
+
+func (s *service) calculateSpecific(_ uint, req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error) {
+	coupon, err := s.repo.FindByID(*req.CouponID)
 	if err != nil {
 		return nil, ErrCouponNotFound
 	}
@@ -167,25 +174,80 @@ func (s *service) Calculate(req *request.CalculateCouponRequest) (*response.Coup
 		return nil, ErrCouponNotApplicable
 	}
 
-	var discount int64
-	switch coupon.Type {
-	case model.CouponTypeFullReduce:
-		discount = coupon.Discount
-		if discount > req.OrderAmount {
-			discount = req.OrderAmount
+	discount := calcDiscount(req.OrderAmount, coupon)
+
+	return &response.CouponCalculateResponse{
+		CouponID:       req.CouponID,
+		OriginalAmount: req.OrderAmount,
+		DiscountAmount: discount,
+		PayAmount:      req.OrderAmount - discount,
+	}, nil
+}
+
+func (s *service) calculateBest(userID uint, req *request.CalculateCouponRequest) (*response.CouponCalculateResponse, error) {
+	now := time.Now()
+
+	coupons, err := s.repo.FindActive(req.OrderAmount)
+	if err != nil {
+		return nil, err
+	}
+
+	couponMap := make(map[uint]*model.Coupon)
+	for i := range coupons {
+		if now.Before(coupons[i].StartAt) || now.After(coupons[i].EndAt) {
+			continue
 		}
-	case model.CouponTypeDiscount:
-		discount = req.OrderAmount * (100 - coupon.Discount) / 100
-		if discount > req.OrderAmount {
-			discount = req.OrderAmount
+		if coupons[i].Status != model.CouponStatusActive {
+			continue
+		}
+		couponMap[coupons[i].ID] = &coupons[i]
+	}
+
+	ucs, err := s.repo.ListUserCoupons(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var bestCouponID *uint
+	bestDiscount := int64(0)
+
+	for _, uc := range ucs {
+		if uc.Status != model.UserCouponStatusUnused {
+			continue
+		}
+		c, ok := couponMap[uc.CouponID]
+		if !ok {
+			continue
+		}
+		d := calcDiscount(req.OrderAmount, c)
+		if d > bestDiscount {
+			bestDiscount = d
+			id := c.ID
+			bestCouponID = &id
 		}
 	}
 
-	payAmount := req.OrderAmount - discount
-
 	return &response.CouponCalculateResponse{
+		CouponID:       bestCouponID,
 		OriginalAmount: req.OrderAmount,
-		DiscountAmount: discount,
-		PayAmount:      payAmount,
+		DiscountAmount: bestDiscount,
+		PayAmount:      req.OrderAmount - bestDiscount,
 	}, nil
+}
+
+func calcDiscount(amount int64, coupon *model.Coupon) int64 {
+	switch coupon.Type {
+	case model.CouponTypeFullReduce:
+		if coupon.Discount > amount {
+			return amount
+		}
+		return coupon.Discount
+	case model.CouponTypeDiscount:
+		d := amount * (100 - coupon.Discount) / 100
+		if d > amount {
+			return amount
+		}
+		return d
+	}
+	return 0
 }

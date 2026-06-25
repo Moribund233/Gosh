@@ -1,13 +1,16 @@
 package category
 
 import (
+	"context"
 	"errors"
+	"time"
 
 	"gorm.io/gorm"
 	"gosh/internal/dto/request"
 	"gosh/internal/dto/response"
 	"gosh/internal/model"
 	repo "gosh/internal/repository/category"
+	"gosh/pkg/cache"
 )
 
 var (
@@ -49,6 +52,9 @@ func (s *service) Create(req *request.CreateCategoryRequest) (*response.Category
 	if err := s.repo.Create(cat); err != nil {
 		return nil, err
 	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:category:tree")
+	}
 	resp := response.ToCategoryResponse(cat)
 	return &resp, nil
 }
@@ -73,6 +79,9 @@ func (s *service) Update(id uint, req *request.UpdateCategoryRequest) (*response
 	if err := s.repo.Update(cat); err != nil {
 		return nil, err
 	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:category:tree")
+	}
 	resp := response.ToCategoryResponse(cat)
 	return &resp, nil
 }
@@ -88,10 +97,31 @@ func (s *service) Delete(id uint) error {
 	if count > 0 {
 		return ErrHasChildren
 	}
-	return s.repo.Delete(id)
+	if err := s.repo.Delete(id); err != nil {
+		return err
+	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:category:tree")
+	}
+	return nil
 }
 
 func (s *service) GetTree() ([]response.CategoryResponse, error) {
+	c := cache.Default()
+	if c != nil {
+		var result []response.CategoryResponse
+		err := c.Remember(context.Background(), "cache:category:tree", 1*time.Hour, func() (interface{}, error) {
+			cats, err := s.repo.FindAll()
+			if err != nil {
+				return nil, err
+			}
+			return response.ToCategoryTree(cats), nil
+		}, &result)
+		if err == nil {
+			return result, nil
+		}
+	}
+
 	cats, err := s.repo.FindAll()
 	if err != nil {
 		return nil, err

@@ -9,20 +9,20 @@ import (
 	"gosh/internal/model"
 )
 
-const orderTimeout = 30 * time.Minute
-
 type Scheduler struct {
-	stopCh chan struct{}
+	timeout time.Duration
+	stopCh  chan struct{}
 }
 
-func New() *Scheduler {
+func New(timeoutMinutes int) *Scheduler {
 	return &Scheduler{
-		stopCh: make(chan struct{}),
+		timeout: time.Duration(timeoutMinutes) * time.Minute,
+		stopCh:  make(chan struct{}),
 	}
 }
 
 func (s *Scheduler) Start(log *zap.Logger) {
-	log.Info("order timeout scheduler started", zap.Duration("interval", 1*time.Minute), zap.Duration("timeout", orderTimeout))
+	log.Info("order timeout scheduler started", zap.Duration("interval", 1*time.Minute), zap.Duration("timeout", s.timeout))
 	go func() {
 		ticker := time.NewTicker(1 * time.Minute)
 		defer ticker.Stop()
@@ -30,7 +30,7 @@ func (s *Scheduler) Start(log *zap.Logger) {
 		for {
 			select {
 			case <-ticker.C:
-				cancelExpiredOrders(log)
+				s.cancelExpiredOrders(log)
 			case <-s.stopCh:
 				log.Info("order timeout scheduler stopped")
 				return
@@ -43,8 +43,8 @@ func (s *Scheduler) Stop() {
 	close(s.stopCh)
 }
 
-func cancelExpiredOrders(log *zap.Logger) {
-	before := time.Now().Add(-orderTimeout)
+func (s *Scheduler) cancelExpiredOrders(log *zap.Logger) {
+	before := time.Now().Add(-s.timeout)
 	var orders []model.Order
 
 	if err := database.DB.Where("status = ? AND created_at < ?", model.OrderStatusPendingPayment, before).Find(&orders).Error; err != nil {
@@ -58,7 +58,8 @@ func cancelExpiredOrders(log *zap.Logger) {
 
 	cancelled := 0
 	for _, order := range orders {
-		err := database.DB.Transaction(func(tx *gorm.DB) error {
+		txCtl, cancel := database.WithTimeout(database.DefaultTimeout)
+		err := txCtl.Transaction(func(tx *gorm.DB) error {
 			var items []model.OrderItem
 			if err := tx.Where("order_id = ?", order.ID).Find(&items).Error; err != nil {
 				return err
@@ -78,7 +79,10 @@ func cancelExpiredOrders(log *zap.Logger) {
 			for _, item := range items {
 				if err := tx.Model(&model.ProductSKU{}).
 					Where("id = ?", item.SKUID).
-					Update("stock", gorm.Expr("stock + ?", item.Quantity)).Error; err != nil {
+					Updates(map[string]interface{}{
+						"stock":   gorm.Expr("stock + ?", item.Quantity),
+						"version": gorm.Expr("version + 1"),
+					}).Error; err != nil {
 					return err
 				}
 			}
@@ -91,6 +95,7 @@ func cancelExpiredOrders(log *zap.Logger) {
 				Note:       "超时未支付，系统自动取消",
 			}).Error
 		})
+		cancel()
 
 		if err != nil {
 			log.Error("cancel expired order failed", zap.Uint("order_id", order.ID), zap.Error(err))

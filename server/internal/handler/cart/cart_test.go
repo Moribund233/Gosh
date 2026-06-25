@@ -264,7 +264,7 @@ func TestSelectCart(t *testing.T) {
 	c1.Set("user_id", uint(1))
 	h.Add(c1)
 
-	c2, w2 := testutil.NewGinContext("POST", "/api/v1/cart/select", fmt.Sprintf(`{"sku_ids":[%d],"select":false}`, skuID))
+	c2, w2 := testutil.NewGinContext("POST", "/api/v1/cart/select", fmt.Sprintf(`{"sku_ids":[%d],"selected":false}`, skuID))
 	c2.Set("user_id", uint(1))
 	h.Select(c2)
 

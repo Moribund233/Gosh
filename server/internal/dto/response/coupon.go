@@ -32,6 +32,7 @@ type UserCouponResponse struct {
 }
 
 type CouponCalculateResponse struct {
+	CouponID       *uint `json:"coupon_id,omitempty"`
 	OriginalAmount int64 `json:"original_amount"`
 	DiscountAmount int64 `json:"discount_amount"`
 	PayAmount      int64 `json:"pay_amount"`

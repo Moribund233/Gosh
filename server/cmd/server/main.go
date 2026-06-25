@@ -14,7 +14,25 @@ import (
 	"gosh/internal/model"
 	"gosh/internal/router"
 	"gosh/internal/scheduler"
+	"gosh/internal/worker"
+	"gosh/pkg/cache"
+	"gosh/pkg/mq"
 )
+
+//	@title			Gosh Mall API
+//	@version		1.0
+//	@description	Gosh Mall is a full-stack e-commerce platform with user management, product catalog, shopping cart, order processing, payment, coupons, and admin features.
+//	@termsOfService	http://swagger.io/terms/
+//	@contact.name	API Support
+//	@contact.email	support@gosh-mall.com
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+//	@host			localhost:9292
+//	@BasePath		/api/v1
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer " followed by your JWT token
 
 func main() {
 	cfgPath := "config/config.yaml"
@@ -26,6 +44,13 @@ func main() {
 
 	if err := database.Init(config.AppConfig.Database); err != nil {
 		logger.Fatal("init database failed", zap.Error(err))
+	}
+
+	if err := database.InitRedis(config.AppConfig.Redis); err != nil {
+		logger.Warn("redis init failed, caching disabled", zap.Error(err))
+	} else {
+		cache.InitDefault(database.RedisClient, logger)
+		logger.Info("redis connected")
 	}
 
 	if err := database.DB.AutoMigrate(
@@ -57,8 +82,23 @@ func main() {
 	}
 	logger.Info("database migration completed")
 
-	orderScheduler := scheduler.New()
+	orderScheduler := scheduler.New(config.AppConfig.Order.TimeoutMinutes)
 	orderScheduler.Start(logger)
+
+	if err := mq.Init(config.AppConfig.RabbitMQ, logger); err != nil {
+		logger.Warn("rabbitmq init failed, async features disabled", zap.Error(err))
+	} else {
+		logger.Info("rabbitmq connected")
+		defer mq.DefaultConn.Close()
+
+		pointWorker := worker.NewPointWorker(logger)
+		pointWorker.Start()
+		defer pointWorker.Stop()
+
+		paymentWorker := worker.NewPaymentWorker(logger)
+		paymentWorker.Start()
+		defer paymentWorker.Stop()
+	}
 
 	r := router.New(logger)
 	addr := fmt.Sprintf(":%d", config.AppConfig.Server.Port)

@@ -1,7 +1,11 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 	"gosh/internal/handler/user"
 	"gosh/internal/handler/address"
@@ -22,16 +26,24 @@ import (
 	"gosh/internal/middleware"
 	"gosh/internal/model"
 	"gosh/pkg/response"
+
+	_ "gosh/docs"
 )
 
 func New(log *zap.Logger) *gin.Engine {
 	r := gin.New()
+	r.MaxMultipartMemory = 10 << 20 // 10MB
+	r.Use(middleware.RequestID())
 	r.Use(middleware.CORS())
 	r.Use(middleware.Recovery(log))
 	r.Use(middleware.Logger(log))
+	r.Use(middleware.SanitizeInput())
+	r.Use(middleware.RateLimitByRole(200, 100, 200, time.Minute))
 
 	// Static files for uploads
 	r.Static("/uploads", "./storage/upload")
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/health", func(c *gin.Context) {
 		response.Success(c, gin.H{"status": "ok"})

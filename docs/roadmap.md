@@ -483,25 +483,85 @@ type UserCoupon struct {
 
 ## 阶段六：部署与优化（第 11-12 周）
 
-- [ ] Docker 容器化（多阶段构建）
-- [ ] docker-compose（后端 + PG + Redis + ES）
+- [x] Docker 容器化（多阶段构建）
+- [x] docker-compose（后端 + PG + Redis）
+- [x] 集成测试覆盖（Python 冒烟测试 + k6 负载测试，24/24 通过）
+- [x] Redis 缓存（热点数据、分布式锁、限流中间件、购物车）
+  - [x] 分类树、首页轮播、品牌故事、热搜排行缓存
+  - [x] 商品详情、秒杀活动列表缓存
+  - [x] 购物车列表缓存（每用户 5min TTL，写操作失效）
+  - [x] 分布式锁（pkg/cache/lock.go）
+  - [x] 滑动窗口限流中间件（基于用户/IP + 路径，按角色分级）
+  - [x] Cache-Aside 模式，Redis 不可用时自动降级
 - [ ] CI/CD 流水线（GitHub Actions）
   - [ ] PR 自动运行 `go test ./...`
   - [ ] 合并到 main 自动部署
-- [ ] Redis 缓存（热点数据、Session）
-- [ ] 消息队列（异步下单/通知）
-- [ ] 性能优化（索引、N+1 查询修复、分页优化）
-- [ ] 集成测试覆盖
+- [x] 消息队列（RabbitMQ，异步积分赠送 + 支付回调处理）
+  - [x] pkg/mq — 连接管理、Exchange/Queue 声明、发布者、消费者框架
+  - [x] internal/worker — PointWorker（订单支付后异步送积分）、PaymentWorker（支付回调异步处理）
+  - [x] 支付成功有 MQ 时走 MQ，无 MQ 时降级为同步送积分
+  - [x] docker-compose 集成 RabbitMQ 4
+- [x] 性能优化（索引、N+1 查询修复、搜索优化）
+  - [x] 添加缺失索引：Order.created_at、OrderItem.SKUID、FlashSale(status,start_at,end_at)、Coupon(status,start_at,end_at)、Address(user_id,is_default)、User.status、Product.{is_new,is_hot,is_featured}
+  - [x] 修复购物车 N+1（2N+1 → 3 次查询：批量 IN 加载 SKU + Product）
+  - [x] 修复 Rebuy N+1（3N+1 → 批量加载 SKU + Product）
+  - [x] isProductOnline 轻量化（仅查 status 列，不再读取全行）
+  - [x] 搜索优化：PostgreSQL 使用 to_tsvector FTS，SQLite 保持 LIKE 兼容
+  - [x] User List 添加 ORDER BY id asc
+  - [x] Coupon List 添加 LIMIT 100 防止全表扫描
 - [ ] API 文档自动生成（Swagger）
 - [ ] 线上部署
 
-## 阶段七：多客户端前端（第 13-16 周）
+## 阶段七：服务端细节打磨（第 13 周）
 
-> 后端 API 全部定型 + Swagger 文档就绪后启动。
-> 四端并行开发，共享同一套 API 契约。
+> 阶段六的基于 Docker 的综合测试发现了若干设计瑕疵和遗漏的防护，
+> 在启动多端前端之前集中修补，避免多端联调时重复返工。
+
+### 7.1 DTO 设计修正 ✅
+
+| 问题 | 现状 | 目标 |
+|------|------|------|
+| `Images` 字段类型 | `string`（存 JSON 序列化字符串） | `[]string` + `gorm:"type:text;serializer:json"` ✅ |
+| 订单 `CreateOrderRequest` 无 items | 只能从购物车下单 | 支持 `items: []CreateOrderItem`，无 items 时回退购物车 ✅ |
+| 购物车 `select` 字段名与 JS 关键字冲突 | `json:"select"` | 改为 `json:"selected"` ✅ |
+| `CalculateCouponRequest` 需预知 coupon_id | 无法做"自动最优" | `coupon_id` 改为 `*uint`，不传时自动选最优 ✅ |
+
+### 7.2 安全与输入防护增强 ✅
+
+- [x] **购物车数量上限**：`AddCartRequest` / `UpdateCartRequest` 补充 `max=99` binding 校验
+- [x] **上传文件大小**：Gin 全局 `MaxMultipartMemory = 10MB`，Upload handler 内额外校验
+- [x] **XSS 防护**：`middleware.SanitizeInput()` 全局中间件，拦截 POST/PUT/PATCH 对 JSON body 内所有字符串做 `html.EscapeString`
+> 分页默认值已存在于所有 endpoint（page=1, size=10 默认值 + 负值/零值 400 校验），此项无需额外工作。
+
+### 7.3 订单与库存策略优化 ✅
+
+- [x] **库存扣减时机评估**：保持当前单阶段模型（下单即扣库存，乐观锁，超时释放）。`reserved_stock` 分离待后续秒杀高并发场景再引入。
+- [x] **订单超时取消**：改为配置化，`config.yaml` → `order.timeout_minutes`，Scheduler 启动时读取。
+- [x] **Rebuy 补充**：返回结构化 `RebuyResponse{Cart, SkippedItems}`，已下架商品明确提示原因而非 500。
+
+### 7.4 API 契约一致性 ✅
+
+- [x] **统一错误码**：`pkg/errcode` 模块化错误码（1xxx-6xxx），全 handler 使用 `*WithCode` 变体。
+- [x] **幂等性响应**：重复请求返回完整的 `OrderResponse`（存于 `IdempotencyRecord.Response`）。
+- [x] **购物车库存实时性**：列表返回 `MaxBuyable` 字段（`min(stock, 99)`）。
+
+### 7.5 可观测性 ✅
+
+- [x] **请求追踪**：`middleware.RequestID()` 为每个请求注入唯一 `request_id`，贯穿日志和 `X-Request-ID` 响应头。
+- [x] **结构化错误日志**：Logger 中间件按状态分级：`2xx`→info，`4xx`→warn，`5xx`→error，日志包含 `request_id`、`user_id`、`path`、`method`、`cost`。
+- [x] **慢查询日志**：GORM 自定义 logger，`SlowThreshold: 200ms`，生产环境默认 `Warn` 级别。
+
+### 7.6 已修复
+
+- [x] **搜索 SQL 注入**：`to_tsquery` → `plainto_tsquery` + `sanitizeFTS` 清洗输入，单引号等特殊字符不再触发 500（`server/internal/repository/product/product.go:147`）
+
+## 阶段八：多客户端前端（待定）
+
+> **⚠️ 前端开发暂缓。** 后端 API 已全部就绪（89 endpoint，Swagger 文档完整），待前端资源到位后启动。
+> 以下四端可并行开发，共享同一套 API 契约。
 > 设计稿来源：阶段一的 uniapp 原型 + 各端补充设计。
 
-### 7.1 C端 — 现有 UniApp 重构（普通用户）
+### 8.1 C端 — 现有 UniApp 重构（普通用户）
 
 | 子任务 | 说明 |
 |--------|------|
@@ -512,7 +572,7 @@ type UserCoupon struct {
 | 订单列表/详情 | orders.html → /pages/order/list + /pages/order/detail |
 | 现有页面 API 对接 | 首页、分类、购物车、个人中心替换 Mock 数据 |
 
-### 7.2 B端 — Admin Web（超级管理员）
+### 8.2 B端 — Admin Web（超级管理员）
 
 | 子任务 | 说明 |
 |--------|------|
@@ -523,7 +583,7 @@ type UserCoupon struct {
 | 订单管理 | 订单列表/详情、发货操作、退款处理 |
 | 营销管理 | 优惠券创建、秒杀设置 |
 
-### 7.3 运营端 — UniApp（运营 + 客服）
+### 8.3 运营端 — UniApp（运营 + 客服）
 
 | 子任务 | 说明 |
 |--------|------|
@@ -533,7 +593,7 @@ type UserCoupon struct {
 | 用户咨询 | 客服对话功能 |
 | 数据看板 | 运营数据概览 |
 
-### 7.4 商家端 — UniApp（商户）
+### 8.4 商家端 — UniApp（商户）
 
 | 子任务 | 说明 |
 |--------|------|

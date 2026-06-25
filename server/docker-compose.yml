@@ -1,38 +1,38 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: gosh
-      POSTGRES_PASSWORD: gosh
-      POSTGRES_DB: gosh
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gosh"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   gosh-server:
     build: .
     image: gosh-server:latest
     ports:
-      - "9292:8080"
+      - "9300:8080"
+    networks:
+      - 1panel-network
     environment:
       GIN_MODE: release
       GOSH_SERVER_MODE: release
+      GOSH_SERVER_PORT: 8080
       GOSH_DATABASE_DRIVER: postgres
-      GOSH_DATABASE_HOST: postgres
+      GOSH_DATABASE_HOST: postgresql
       GOSH_DATABASE_PORT: 5432
-      GOSH_DATABASE_USER: gosh
-      GOSH_DATABASE_PASSWORD: gosh
+      GOSH_DATABASE_USER: alucard
+      GOSH_DATABASE_PASSWORD: admin123456
       GOSH_DATABASE_DBNAME: gosh
       GOSH_DATABASE_SSLMODE: disable
-    depends_on:
-      postgres:
-        condition: service_healthy
+      GOSH_REDIS_HOST: 1Panel-redis-IYDV
+      GOSH_REDIS_PORT: 6379
+      GOSH_REDIS_PASSWORD: redis_ttmjnS
+      GOSH_REDIS_DB: 0
+      GOSH_RABBITMQ_HOST: 1Panel-rabbitmq-L8q7
+      GOSH_RABBITMQ_PORT: 5672
+      GOSH_RABBITMQ_USER: rabbitmq
+      GOSH_RABBITMQ_PASSWORD: rabbitmq
+      GOSH_RABBITMQ_VHOST: /
+      GOSH_JWT_SECRET: gosh-dev-secret
+      GOSH_JWT_EXPIRE_HOUR: 72
+      GOSH_UPLOAD_DIR: storage/upload
+      GOSH_UPLOAD_MAX_SIZE: 10
+      GOSH_ORDER_TIMEOUT_MINUTES: 30
+    restart: unless-stopped
 
-volumes:
-  pgdata:
+networks:
+  1panel-network:
+    external: true

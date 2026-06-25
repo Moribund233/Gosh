@@ -10,7 +10,7 @@ type User struct {
 	Avatar     string     `gorm:"size:256" json:"avatar"`
 	Role       string     `gorm:"size:20;default:user;index" json:"role"`
 	TenantID   *uint      `gorm:"index" json:"tenant_id"`
-	Status     string     `gorm:"size:20;default:active" json:"status"`
+	Status     string     `gorm:"size:20;default:active;index" json:"status"`
 	Points     int        `gorm:"default:0" json:"points"`
 	LastLogin  *time.Time `json:"last_login"`
 }

@@ -14,7 +14,7 @@ type ProductResponse struct {
 	OriginalPrice int64             `json:"original_price"`
 	Sales         int64             `json:"sales"`
 	Tags          string            `json:"tags"`
-	Images        string            `json:"images"`
+	Images        []string          `json:"images"`
 	Status        string            `json:"status"`
 	Description   string            `json:"description,omitempty"`
 	Origin        string            `json:"origin"`
@@ -35,12 +35,12 @@ type SKUResponse struct {
 }
 
 type ReviewResponse struct {
-	ID        uint   `json:"id"`
-	ProductID uint   `json:"product_id"`
-	UserID    uint   `json:"user_id"`
-	Score     int    `json:"score"`
-	Content   string `json:"content"`
-	Images    string `json:"images"`
+	ID        uint     `json:"id"`
+	ProductID uint     `json:"product_id"`
+	UserID    uint     `json:"user_id"`
+	Score     int      `json:"score"`
+	Content   string   `json:"content"`
+	Images    []string `json:"images"`
 	Nickname  string `json:"nickname"`
 	Avatar    string `json:"avatar"`
 	CreatedAt string `json:"created_at"`

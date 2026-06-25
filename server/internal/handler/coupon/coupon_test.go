@@ -145,6 +145,7 @@ func TestCalculate_FullReduce(t *testing.T) {
 
 	body := fmt.Sprintf(`{"order_amount":20000,"coupon_id":%d}`, coupon.ID)
 	c, w := testutil.NewGinContext("POST", "/api/v1/coupons/calculate", body)
+	c.Set("user_id", uint(1))
 	h.Calculate(c)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -164,6 +165,7 @@ func TestCalculate_NotApplicable(t *testing.T) {
 
 	body := fmt.Sprintf(`{"order_amount":5000,"coupon_id":%d}`, coupon.ID)
 	c, w := testutil.NewGinContext("POST", "/api/v1/coupons/calculate", body)
+	c.Set("user_id", uint(1))
 	h.Calculate(c)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -188,6 +190,7 @@ func TestCalculate_Discount(t *testing.T) {
 
 	body := fmt.Sprintf(`{"order_amount":20000,"coupon_id":%d}`, coupon.ID)
 	c, w := testutil.NewGinContext("POST", "/api/v1/coupons/calculate", body)
+	c.Set("user_id", uint(1))
 	h.Calculate(c)
 
 	assert.Equal(t, http.StatusOK, w.Code)

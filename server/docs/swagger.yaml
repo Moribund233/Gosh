@@ -1,0 +1,2872 @@
+basePath: /api/v1
+definitions:
+  gosh_internal_dto_request.AddBrowseHistoryRequest:
+    properties:
+      product_id:
+        type: integer
+    required:
+    - product_id
+    type: object
+  gosh_internal_dto_request.AddCartRequest:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+      sku_id:
+        type: integer
+    required:
+    - quantity
+    - sku_id
+    type: object
+  gosh_internal_dto_request.AddFavoriteRequest:
+    properties:
+      product_id:
+        type: integer
+    required:
+    - product_id
+    type: object
+  gosh_internal_dto_request.ApplyMerchantRequest:
+    properties:
+      contact_name:
+        maxLength: 32
+        type: string
+      contact_phone:
+        type: string
+      shop_desc:
+        maxLength: 512
+        type: string
+      shop_name:
+        maxLength: 64
+        type: string
+    required:
+    - contact_name
+    - contact_phone
+    - shop_name
+    type: object
+  gosh_internal_dto_request.ApplyPointsRequest:
+    properties:
+      points:
+        minimum: 1
+        type: integer
+    required:
+    - points
+    type: object
+  gosh_internal_dto_request.CalculateCouponRequest:
+    properties:
+      coupon_id:
+        type: integer
+      order_amount:
+        minimum: 0
+        type: integer
+    required:
+    - coupon_id
+    - order_amount
+    type: object
+  gosh_internal_dto_request.CancelOrderRequest:
+    properties:
+      reason:
+        maxLength: 128
+        type: string
+    type: object
+  gosh_internal_dto_request.CreateAddressRequest:
+    properties:
+      city:
+        maxLength: 32
+        type: string
+      detail:
+        maxLength: 256
+        type: string
+      district:
+        maxLength: 32
+        type: string
+      is_default:
+        type: boolean
+      name:
+        maxLength: 32
+        type: string
+      phone:
+        type: string
+      province:
+        maxLength: 32
+        type: string
+    required:
+    - city
+    - detail
+    - district
+    - name
+    - phone
+    - province
+    type: object
+  gosh_internal_dto_request.CreateBannerRequest:
+    properties:
+      background:
+        maxLength: 128
+        type: string
+      description:
+        maxLength: 256
+        type: string
+      image:
+        maxLength: 256
+        type: string
+      link:
+        maxLength: 256
+        type: string
+      sort_order:
+        type: integer
+      subtitle:
+        maxLength: 128
+        type: string
+      title:
+        maxLength: 64
+        type: string
+    type: object
+  gosh_internal_dto_request.CreateCategoryRequest:
+    properties:
+      banner:
+        maxLength: 256
+        type: string
+      icon:
+        maxLength: 32
+        type: string
+      name:
+        maxLength: 32
+        type: string
+      parent_id:
+        type: integer
+      sort_order:
+        type: integer
+    required:
+    - name
+    type: object
+  gosh_internal_dto_request.CreateCouponRequest:
+    properties:
+      condition:
+        minimum: 0
+        type: integer
+      discount:
+        minimum: 1
+        type: integer
+      end_at:
+        type: string
+      name:
+        maxLength: 64
+        type: string
+      per_limit:
+        minimum: 1
+        type: integer
+      start_at:
+        type: string
+      total_count:
+        minimum: 0
+        type: integer
+      type:
+        enum:
+        - full_reduce
+        - discount
+        type: string
+    required:
+    - condition
+    - discount
+    - end_at
+    - name
+    - start_at
+    - type
+    type: object
+  gosh_internal_dto_request.CreateOrderRequest:
+    properties:
+      address_id:
+        type: integer
+      delivery_method:
+        enum:
+        - standard
+        - express
+        type: string
+      remark:
+        maxLength: 200
+        type: string
+    type: object
+  gosh_internal_dto_request.CreateProductRequest:
+    properties:
+      brand:
+        maxLength: 64
+        type: string
+      category_id:
+        type: integer
+      description:
+        type: string
+      images:
+        type: string
+      is_featured:
+        type: boolean
+      is_hot:
+        type: boolean
+      is_new:
+        type: boolean
+      name:
+        maxLength: 128
+        type: string
+      origin:
+        maxLength: 128
+        type: string
+      original_price:
+        minimum: 0
+        type: integer
+      price:
+        minimum: 0
+        type: integer
+      shelf_life:
+        maxLength: 64
+        type: string
+      skus:
+        items:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateSKUReq'
+        type: array
+      subtitle:
+        maxLength: 256
+        type: string
+      tags:
+        maxLength: 256
+        type: string
+    required:
+    - category_id
+    - name
+    - price
+    type: object
+  gosh_internal_dto_request.CreateReviewRequest:
+    properties:
+      content:
+        maxLength: 500
+        type: string
+      images:
+        type: string
+      product_id:
+        type: integer
+      score:
+        maximum: 5
+        minimum: 1
+        type: integer
+    required:
+    - product_id
+    - score
+    type: object
+  gosh_internal_dto_request.CreateSKUReq:
+    properties:
+      name:
+        maxLength: 64
+        type: string
+      price:
+        minimum: 0
+        type: integer
+      stock:
+        minimum: 0
+        type: integer
+    required:
+    - name
+    - price
+    type: object
+  gosh_internal_dto_request.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  gosh_internal_dto_request.MergeCartRequest:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/gosh_internal_dto_request.MergeItem'
+        type: array
+    required:
+    - items
+    type: object
+  gosh_internal_dto_request.MergeItem:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+      sku_id:
+        type: integer
+    required:
+    - quantity
+    - sku_id
+    type: object
+  gosh_internal_dto_request.PayRequest:
+    properties:
+      method:
+        enum:
+        - mock
+        - wechat
+        - alipay
+        type: string
+      order_no:
+        type: string
+    required:
+    - method
+    - order_no
+    type: object
+  gosh_internal_dto_request.RefundRequest:
+    properties:
+      amount:
+        minimum: 0
+        type: integer
+      reason:
+        maxLength: 256
+        type: string
+      transaction_no:
+        type: string
+    required:
+    - amount
+    - transaction_no
+    type: object
+  gosh_internal_dto_request.RegisterRequest:
+    properties:
+      nickname:
+        maxLength: 32
+        type: string
+      password:
+        maxLength: 32
+        minLength: 6
+        type: string
+      phone:
+        type: string
+    required:
+    - nickname
+    - password
+    - phone
+    type: object
+  gosh_internal_dto_request.ReviewMerchantRequest:
+    properties:
+      action:
+        enum:
+        - approve
+        - reject
+        type: string
+      application_id:
+        type: integer
+      remark:
+        maxLength: 256
+        type: string
+    required:
+    - action
+    - application_id
+    type: object
+  gosh_internal_dto_request.SelectRequest:
+    properties:
+      all:
+        description: true=全选 false=取消全选
+        type: boolean
+      select:
+        description: true=选中 false=取消选中
+        type: boolean
+      sku_ids:
+        description: 空列表=全选/全不选
+        items:
+          type: integer
+        type: array
+    type: object
+  gosh_internal_dto_request.UpdateAddressRequest:
+    properties:
+      city:
+        maxLength: 32
+        type: string
+      detail:
+        maxLength: 256
+        type: string
+      district:
+        maxLength: 32
+        type: string
+      is_default:
+        type: boolean
+      name:
+        maxLength: 32
+        type: string
+      phone:
+        type: string
+      province:
+        maxLength: 32
+        type: string
+    type: object
+  gosh_internal_dto_request.UpdateBannerRequest:
+    properties:
+      background:
+        maxLength: 128
+        type: string
+      description:
+        maxLength: 256
+        type: string
+      image:
+        maxLength: 256
+        type: string
+      link:
+        maxLength: 256
+        type: string
+      sort_order:
+        type: integer
+      status:
+        enum:
+        - "on"
+        - "off"
+        type: string
+      subtitle:
+        maxLength: 128
+        type: string
+      title:
+        maxLength: 64
+        type: string
+    type: object
+  gosh_internal_dto_request.UpdateBrandStoryRequest:
+    properties:
+      badge:
+        maxLength: 32
+        type: string
+      description:
+        maxLength: 256
+        type: string
+      link:
+        maxLength: 256
+        type: string
+      logo:
+        maxLength: 256
+        type: string
+      title:
+        maxLength: 64
+        type: string
+    type: object
+  gosh_internal_dto_request.UpdateCartRequest:
+    properties:
+      quantity:
+        minimum: 1
+        type: integer
+      selected:
+        type: boolean
+    required:
+    - quantity
+    type: object
+  gosh_internal_dto_request.UpdateCategoryRequest:
+    properties:
+      banner:
+        maxLength: 256
+        type: string
+      icon:
+        maxLength: 32
+        type: string
+      name:
+        maxLength: 32
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  gosh_internal_dto_request.UpdateProductRequest:
+    properties:
+      brand:
+        maxLength: 64
+        type: string
+      category_id:
+        type: integer
+      description:
+        type: string
+      images:
+        type: string
+      is_featured:
+        type: boolean
+      is_hot:
+        type: boolean
+      is_new:
+        type: boolean
+      name:
+        maxLength: 128
+        type: string
+      origin:
+        maxLength: 128
+        type: string
+      original_price:
+        type: integer
+      price:
+        type: integer
+      shelf_life:
+        maxLength: 64
+        type: string
+      status:
+        enum:
+        - "on"
+        - "off"
+        type: string
+      subtitle:
+        maxLength: 256
+        type: string
+      tags:
+        maxLength: 256
+        type: string
+    type: object
+  gosh_internal_dto_request.UpdateProfileRequest:
+    properties:
+      avatar:
+        maxLength: 256
+        type: string
+      nickname:
+        maxLength: 32
+        type: string
+    type: object
+  gosh_internal_dto_request.UpdateUserRoleRequest:
+    properties:
+      role:
+        enum:
+        - user
+        - merchant
+        - support
+        - operator
+        - super_admin
+        type: string
+      user_id:
+        type: integer
+    required:
+    - role
+    - user_id
+    type: object
+  gosh_pkg_response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+host: localhost:9292
+info:
+  contact:
+    email: support@gosh-mall.com
+    name: API Support
+  description: Gosh Mall is a full-stack e-commerce platform with user management,
+    product catalog, shopping cart, order processing, payment, coupons, and admin
+    features.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gosh Mall API
+  version: "1.0"
+paths:
+  /addresses:
+    get:
+      consumes:
+      - application/json
+      description: Get all addresses for current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List user addresses
+      tags:
+      - Addresses
+    post:
+      consumes:
+      - application/json
+      description: Create a new shipping address
+      parameters:
+      - description: Address info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateAddressRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a new address
+      tags:
+      - Addresses
+  /addresses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a shipping address by ID
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete an address
+      tags:
+      - Addresses
+    put:
+      consumes:
+      - application/json
+      description: Update a shipping address by ID
+      parameters:
+      - description: Address ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated address info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateAddressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update an address
+      tags:
+      - Addresses
+  /admin/banners:
+    get:
+      consumes:
+      - application/json
+      description: Admin lists all banners
+      parameters:
+      - description: Status filter
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List all banners
+      tags:
+      - Banners
+    post:
+      consumes:
+      - application/json
+      description: Admin creates a new banner
+      parameters:
+      - description: Banner info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateBannerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a banner
+      tags:
+      - Banners
+  /admin/banners/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Admin deletes a banner
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a banner
+      tags:
+      - Banners
+    put:
+      consumes:
+      - application/json
+      description: Admin updates a banner
+      parameters:
+      - description: Banner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Banner update info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateBannerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a banner
+      tags:
+      - Banners
+  /admin/brand-story:
+    put:
+      consumes:
+      - application/json
+      description: Admin updates the brand story
+      parameters:
+      - description: Brand story info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateBrandStoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update brand story
+      tags:
+      - Banners
+  /admin/categories:
+    post:
+      consumes:
+      - application/json
+      description: Create a new category
+      parameters:
+      - description: Category info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a category
+      tags:
+      - Categories
+  /admin/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a category
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Update an existing category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category update info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a category
+      tags:
+      - Categories
+  /admin/merchant/applications:
+    get:
+      consumes:
+      - application/json
+      description: Admin lists all merchant applications
+      parameters:
+      - description: Application status filter
+        in: query
+        name: status
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List merchant applications
+      tags:
+      - Merchants
+  /admin/merchant/review:
+    post:
+      consumes:
+      - application/json
+      description: Admin reviews a merchant application
+      parameters:
+      - description: Review info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.ReviewMerchantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Review merchant application
+      tags:
+      - Merchants
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      description: List users filtered by role (super admin only)
+      parameters:
+      - description: Role filter
+        in: query
+        name: role
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {list: []gosh/internal/dto/response.UserResponse, total:
+            int64}'
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List users by role
+      tags:
+      - Users
+  /admin/users/role:
+    put:
+      consumes:
+      - application/json
+      description: Update a user's role (super admin only)
+      parameters:
+      - description: User ID and new role
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update user role
+      tags:
+      - Users
+  /banners:
+    get:
+      consumes:
+      - application/json
+      description: Get all active banners for public display
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get active banners
+      tags:
+      - Banners
+  /brand-story:
+    get:
+      consumes:
+      - application/json
+      description: Get the brand story content
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get brand story
+      tags:
+      - Banners
+  /browse-history:
+    get:
+      consumes:
+      - application/json
+      description: List user's browse history with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {list: []gosh/internal/dto/response.BrowseHistoryResponse,
+            total: int64}'
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List browse history
+      tags:
+      - BrowseHistory
+    post:
+      consumes:
+      - application/json
+      description: Record a product view in browse history
+      parameters:
+      - description: Product ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.AddBrowseHistoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add browse history
+      tags:
+      - BrowseHistory
+  /cart:
+    get:
+      consumes:
+      - application/json
+      description: Get current user's cart items with SKU details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get cart list
+      tags:
+      - Cart
+    post:
+      consumes:
+      - application/json
+      description: Add a product SKU to the current user's cart
+      parameters:
+      - description: Cart item details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.AddCartRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add item to cart
+      tags:
+      - Cart
+  /cart/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a product from the current user's cart
+      parameters:
+      - description: Cart item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete cart item
+      tags:
+      - Cart
+    put:
+      consumes:
+      - application/json
+      description: Update quantity or properties of a cart item
+      parameters:
+      - description: Cart item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateCartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update cart item
+      tags:
+      - Cart
+  /cart/count:
+    get:
+      consumes:
+      - application/json
+      description: Get the total number of items in the current user's cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get cart item count
+      tags:
+      - Cart
+  /cart/merge:
+    post:
+      consumes:
+      - application/json
+      description: Merge guest cart items into the current user's cart after login
+      parameters:
+      - description: Guest cart data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.MergeCartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Merge guest cart
+      tags:
+      - Cart
+  /cart/select:
+    post:
+      consumes:
+      - application/json
+      description: Select or deselect items in the cart for checkout
+      parameters:
+      - description: Selection details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.SelectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Select/deselect cart items
+      tags:
+      - Cart
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get hierarchical category tree
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get category tree
+      tags:
+      - Categories
+  /categories/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get category info by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get category by ID
+      tags:
+      - Categories
+  /coupons:
+    post:
+      consumes:
+      - application/json
+      description: Admin creates a new coupon
+      parameters:
+      - description: Coupon info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateCouponRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a coupon
+      tags:
+      - Coupons
+  /coupons/{id}/receive:
+    post:
+      consumes:
+      - application/json
+      description: User receives a coupon by ID
+      parameters:
+      - description: Coupon ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Receive a coupon
+      tags:
+      - Coupons
+  /coupons/available:
+    get:
+      consumes:
+      - application/json
+      description: Get available coupons for the current user
+      parameters:
+      - description: Order amount for filtering
+        in: query
+        name: amount
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get available coupons
+      tags:
+      - Coupons
+  /coupons/calculate:
+    post:
+      consumes:
+      - application/json
+      description: Calculate the discount for a coupon
+      parameters:
+      - description: Calculation info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CalculateCouponRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Calculate coupon discount
+      tags:
+      - Coupons
+  /favorites:
+    get:
+      consumes:
+      - application/json
+      description: List user's favorite products with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'data: {list: []gosh/internal/dto/response.FavoriteResponse,
+            total: int64}'
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List favorites
+      tags:
+      - Favorites
+    post:
+      consumes:
+      - application/json
+      description: Add a product to favorites
+      parameters:
+      - description: Product ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.AddFavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add a favorite
+      tags:
+      - Favorites
+  /favorites/remove:
+    post:
+      consumes:
+      - application/json
+      description: Remove a product from favorites
+      parameters:
+      - description: Product ID
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.AddFavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Remove a favorite
+      tags:
+      - Favorites
+  /flash-sales:
+    get:
+      consumes:
+      - application/json
+      description: Get all active flash sales
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: List active flash sales
+      tags:
+      - Flash Sales
+  /merchant/application:
+    get:
+      consumes:
+      - application/json
+      description: Get the current user's merchant application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get my application
+      tags:
+      - Merchants
+  /merchant/apply:
+    post:
+      consumes:
+      - application/json
+      description: User applies to become a merchant
+      parameters:
+      - description: Application info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.ApplyMerchantRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Apply for merchant
+      tags:
+      - Merchants
+  /orders:
+    get:
+      consumes:
+      - application/json
+      description: List current user's orders with pagination and filters
+      parameters:
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 50
+        minimum: 1
+        name: size
+        type: integer
+      - enum:
+        - pending_payment
+        - pending_delivery
+        - pending_receipt
+        - completed
+        - cancelled
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: List orders
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      description: Create a new order from selected cart items
+      parameters:
+      - description: Idempotency key
+        in: header
+        name: Idempotent-Key
+        required: true
+        type: string
+      - description: Order creation details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create order
+      tags:
+      - Orders
+  /orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed info of a specific order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get order by ID
+      tags:
+      - Orders
+  /orders/{id}/apply-points:
+    post:
+      consumes:
+      - application/json
+      description: Apply loyalty points discount to an order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Points to apply
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.ApplyPointsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Apply points to order
+      tags:
+      - Orders
+  /orders/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Cancel an existing order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Cancellation reason
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CancelOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Cancel order
+      tags:
+      - Orders
+  /orders/{id}/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm order receipt (mark as completed)
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Confirm receipt
+      tags:
+      - Orders
+  /orders/{id}/pay:
+    post:
+      consumes:
+      - application/json
+      description: Initiate payment for an order
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Pay order
+      tags:
+      - Orders
+  /orders/{id}/rebuy:
+    post:
+      consumes:
+      - application/json
+      description: Add all items from a previous order back to the cart
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Rebuy order
+      tags:
+      - Orders
+  /orders/{id}/ship:
+    post:
+      consumes:
+      - application/json
+      description: Mark an order as shipped (admin only)
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Ship order (admin)
+      tags:
+      - Orders
+  /payment/callback/{method}:
+    post:
+      consumes:
+      - text/plain
+      description: Handle payment gateway callback/notification
+      parameters:
+      - description: Payment method
+        in: path
+        name: method
+        required: true
+        type: string
+      - description: Raw callback body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Payment callback
+      tags:
+      - Payments
+  /payment/methods:
+    get:
+      consumes:
+      - application/json
+      description: Get available payment methods
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get payment methods
+      tags:
+      - Payments
+  /payment/pay:
+    post:
+      consumes:
+      - application/json
+      description: Initiate payment for an order using the specified method
+      parameters:
+      - description: Payment details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.PayRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Initiate payment
+      tags:
+      - Payments
+  /payment/refund:
+    post:
+      consumes:
+      - application/json
+      description: Process a refund for a completed payment (admin only)
+      parameters:
+      - description: Refund details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.RefundRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Refund payment (admin)
+      tags:
+      - Payments
+  /payment/status/{order_no}:
+    get:
+      consumes:
+      - application/json
+      description: Get payment status by order number
+      parameters:
+      - description: Order number
+        in: path
+        name: order_no
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get payment status
+      tags:
+      - Payments
+  /points:
+    get:
+      consumes:
+      - application/json
+      description: Get the current user's point balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get point balance
+      tags:
+      - Points
+  /points/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get the current user's point transaction history
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get point logs
+      tags:
+      - Points
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: List products with filters and pagination
+      parameters:
+      - description: Category ID
+        in: query
+        name: category_id
+        type: integer
+      - description: Tag filter
+        in: query
+        name: tag
+        type: string
+      - description: Search keyword
+        in: query
+        name: keyword
+        type: string
+      - description: Sort field (sales, price_newest, price_oldest, newest)
+        in: query
+        name: sort
+        type: string
+      - description: Status (on, off)
+        in: query
+        name: status
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: List products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: Product info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a product
+      tags:
+      - Products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get detailed product info including SKUs
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get product by ID
+      tags:
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product update info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update a product
+      tags:
+      - Products
+  /products/{id}/status/{status}:
+    put:
+      consumes:
+      - application/json
+      description: Update product status to on or off
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Status (on, off)
+        in: path
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update product status
+      tags:
+      - Products
+  /products/hot-search:
+    get:
+      consumes:
+      - application/json
+      description: Get popular search keywords
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Get hot search keywords
+      tags:
+      - Products
+  /products/search:
+    get:
+      consumes:
+      - application/json
+      description: Search products with keyword and filters
+      parameters:
+      - description: Category ID
+        in: query
+        name: category_id
+        type: integer
+      - description: Tag filter
+        in: query
+        name: tag
+        type: string
+      - description: Search keyword
+        in: query
+        name: keyword
+        type: string
+      - description: Sort field (sales, price_newest, price_oldest, newest)
+        in: query
+        name: sort
+        type: string
+      - description: Status (on, off)
+        in: query
+        name: status
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Search products
+      tags:
+      - Products
+  /products/search-history:
+    get:
+      consumes:
+      - application/json
+      description: Get current user's search history
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get search history
+      tags:
+      - Products
+  /products/search-history/clear:
+    post:
+      consumes:
+      - application/json
+      description: Clear current user's search history
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Clear search history
+      tags:
+      - Products
+  /reviews:
+    get:
+      consumes:
+      - application/json
+      description: List reviews for a product with pagination
+      parameters:
+      - description: Product ID
+        in: query
+        name: product_id
+        required: true
+        type: integer
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: List reviews
+      tags:
+      - Reviews
+    post:
+      consumes:
+      - application/json
+      description: Create a product review
+      parameters:
+      - description: Review info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.CreateReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create a review
+      tags:
+      - Reviews
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image file (multipart/form-data)
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Upload a file
+      tags:
+      - Upload
+  /upload/base64:
+    post:
+      consumes:
+      - application/json
+      description: Upload a base64 encoded image
+      parameters:
+      - description: Base64 image data
+        in: body
+        name: body
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Upload a base64 image
+      tags:
+      - Upload
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with phone and password
+      parameters:
+      - description: Login info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: User login
+      tags:
+      - Users
+  /user/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get current user profile with favorites count and order stats
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update nickname and/or avatar
+      parameters:
+      - description: Profile update info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - Users
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register with phone, password, and optional nickname
+      parameters:
+      - description: Registration info
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/gosh_internal_dto_request.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gosh_pkg_response.Response'
+      summary: Register a new user
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer " followed by your JWT token
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

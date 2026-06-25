@@ -1,6 +1,8 @@
 package product
 
 import (
+	"strings"
+
 	"gorm.io/gorm"
 	"gosh/internal/database"
 	"gosh/internal/model"
@@ -9,8 +11,11 @@ import (
 type Repository interface {
 	Create(product *model.Product, skus []model.ProductSKU) error
 	FindByID(id uint) (*model.Product, error)
+	FindByIDs(ids []uint) ([]model.Product, error)
 	FindSKUByID(skuID uint) (*model.ProductSKU, error)
+	FindSKUsByIDs(skuIDs []uint) ([]model.ProductSKU, error)
 	FindSKUsByProductID(productID uint) ([]model.ProductSKU, error)
+	IsProductOnline(productID uint) (bool, error)
 	List(categoryID uint, tag, keyword, sort, status string, page, size int) ([]model.Product, int64, error)
 	Update(product *model.Product) error
 	UpdateStatus(id uint, status string) error
@@ -58,6 +63,33 @@ func (r *repo) FindSKUByID(skuID uint) (*model.ProductSKU, error) {
 	return &sku, nil
 }
 
+func (r *repo) FindSKUsByIDs(skuIDs []uint) ([]model.ProductSKU, error) {
+	if len(skuIDs) == 0 {
+		return nil, nil
+	}
+	var skus []model.ProductSKU
+	err := database.DB.Where("id IN ?", skuIDs).Find(&skus).Error
+	return skus, err
+}
+
+func (r *repo) FindByIDs(ids []uint) ([]model.Product, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	var products []model.Product
+	err := database.DB.Select("id, name, images, status").Where("id IN ?", ids).Find(&products).Error
+	return products, err
+}
+
+func (r *repo) IsProductOnline(productID uint) (bool, error) {
+	var status string
+	err := database.DB.Model(&model.Product{}).Select("status").Where("id = ?", productID).Scan(&status).Error
+	if err != nil {
+		return false, err
+	}
+	return status == model.ProductStatusOn, nil
+}
+
 func (r *repo) FindSKUsByProductID(productID uint) ([]model.ProductSKU, error) {
 	var skus []model.ProductSKU
 	err := database.DB.Where("product_id = ?", productID).Find(&skus).Error
@@ -75,7 +107,7 @@ func (r *repo) List(categoryID uint, tag, keyword, sort, status string, page, si
 		query = query.Where("tags LIKE ?", "%"+tag+"%")
 	}
 	if keyword != "" {
-		query = query.Where("name LIKE ? OR subtitle LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+		query = keywordFilter(query, keyword)
 	}
 	if status != "" {
 		query = query.Where("status = ?", status)
@@ -110,4 +142,29 @@ func (r *repo) UpdateStatus(id uint, status string) error {
 
 func (r *repo) Delete(id uint) error {
 	return database.DB.Delete(&model.Product{}, id).Error
+}
+
+func keywordFilter(query *gorm.DB, keyword string) *gorm.DB {
+	driver := database.DB.Dialector.Name()
+	if driver == "postgres" {
+		cleaned := sanitizeFTS(keyword)
+		if cleaned == "" {
+			return query.Where("1 = 0")
+		}
+		return query.Where(
+			"to_tsvector('simple', coalesce(name,'') || ' ' || coalesce(subtitle,'')) @@ plainto_tsquery('simple', ?)",
+			cleaned,
+		)
+	}
+	return query.Where("name LIKE ? OR subtitle LIKE ?", "%"+keyword+"%", "%"+keyword+"%")
+}
+
+func sanitizeFTS(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if r == ' ' || r == '-' || ('a' <= r && r <= 'z') || ('A' <= r && r <= 'Z') || ('0' <= r && r <= '9') || r >= 0x80 {
+			b.WriteRune(r)
+		}
+	}
+	return strings.TrimSpace(b.String())
 }

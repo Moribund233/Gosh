@@ -15,6 +15,7 @@ import (
 	paymentRepo "gosh/internal/repository/payment"
 	paymentPkg "gosh/internal/pkg/payment"
 	pointSvc "gosh/internal/service/point"
+	"gosh/pkg/mq"
 )
 
 var (
@@ -127,8 +128,16 @@ func (s *service) Pay(userID uint, req *request.PayRequest) (*response.PaymentRe
 		return nil, err
 	}
 
-	if err := pointSvc.EarnPoints(userID, order.ID, order.PayAmount); err != nil {
-		return nil, err
+	if mq.DefaultConn != nil {
+		mq.PublishEvent(mq.RoutingKeyOrderPaid, map[string]interface{}{
+			"user_id":    userID,
+			"order_id":   order.ID,
+			"pay_amount": order.PayAmount,
+		})
+	} else {
+		if err := pointSvc.EarnPoints(userID, order.ID, order.PayAmount); err != nil {
+			return nil, err
+		}
 	}
 
 	fullPayment, err := s.paymentRepo.FindByOrderNo(req.OrderNo)

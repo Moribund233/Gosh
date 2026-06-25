@@ -12,6 +12,19 @@ database:
   dbname: ""
   sslmode: ""
 
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  user: gosh
+  password: gosh
+  vhost: /
+
 jwt:
   secret: gosh-dev-secret
   expire_hour: 72
@@ -26,3 +39,6 @@ logger:
   max_size: 100
   max_backups: 3
   max_age: 7
+
+order:
+  timeout_minutes: 30

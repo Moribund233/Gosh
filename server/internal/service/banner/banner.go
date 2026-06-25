@@ -1,12 +1,15 @@
 package banner
 
 import (
+	"context"
 	"errors"
+	"time"
 
 	"gosh/internal/dto/request"
 	"gosh/internal/dto/response"
 	"gosh/internal/model"
 	repo "gosh/internal/repository/banner"
+	"gosh/pkg/cache"
 )
 
 var (
@@ -41,6 +44,9 @@ func (s *service) Create(req *request.CreateBannerRequest) (*response.BannerResp
 	}
 	if err := s.repo.Create(banner); err != nil {
 		return nil, err
+	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:banner:active")
 	}
 	resp := response.ToBannerResponse(banner)
 	return &resp, nil
@@ -78,6 +84,9 @@ func (s *service) Update(id uint, req *request.UpdateBannerRequest) (*response.B
 	if err := s.repo.Update(banner); err != nil {
 		return nil, err
 	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:banner:active")
+	}
 	resp := response.ToBannerResponse(banner)
 	return &resp, nil
 }
@@ -86,10 +95,39 @@ func (s *service) Delete(id uint) error {
 	if _, err := s.repo.FindByID(id); err != nil {
 		return ErrBannerNotFound
 	}
-	return s.repo.Delete(id)
+	if err := s.repo.Delete(id); err != nil {
+		return err
+	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), "cache:banner:active")
+	}
+	return nil
 }
 
 func (s *service) List(status string) ([]response.BannerResponse, error) {
+	if status != model.StatusOn {
+		list, err := s.repo.List(status)
+		if err != nil {
+			return nil, err
+		}
+		return response.ToBannerList(list), nil
+	}
+
+	c := cache.Default()
+	if c != nil {
+		var result []response.BannerResponse
+		err := c.Remember(context.Background(), "cache:banner:active", 30*time.Minute, func() (interface{}, error) {
+			list, err := s.repo.List(model.StatusOn)
+			if err != nil {
+				return nil, err
+			}
+			return response.ToBannerList(list), nil
+		}, &result)
+		if err == nil {
+			return result, nil
+		}
+	}
+
 	list, err := s.repo.List(status)
 	if err != nil {
 		return nil, err

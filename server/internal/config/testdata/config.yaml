@@ -6,6 +6,19 @@ database:
   driver: sqlite
   path: ":memory:"
 
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0
+
+rabbitmq:
+  host: 127.0.0.1
+  port: 5672
+  user: gosh
+  password: gosh
+  vhost: /
+
 jwt:
   secret: test-secret
   expire_hour: 72

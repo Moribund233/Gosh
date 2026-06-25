@@ -8,7 +8,7 @@ type CreateProductRequest struct {
 	Price         int64          `json:"price" binding:"required,min=0"`
 	OriginalPrice int64          `json:"original_price" binding:"omitempty,min=0"`
 	Tags          string         `json:"tags" binding:"omitempty,max=256"`
-	Images        string         `json:"images"`
+	Images        []string       `json:"images"`
 	Description   string         `json:"description"`
 	Origin        string         `json:"origin" binding:"omitempty,max=128"`
 	ShelfLife     string         `json:"shelf_life" binding:"omitempty,max=64"`
@@ -32,11 +32,11 @@ type UpdateProductRequest struct {
 	Price         *int64 `json:"price"`
 	OriginalPrice *int64 `json:"original_price"`
 	Tags          string `json:"tags" binding:"omitempty,max=256"`
-	Images        string `json:"images"`
-	Description   string `json:"description"`
-	Origin        string `json:"origin" binding:"omitempty,max=128"`
-	ShelfLife     string `json:"shelf_life" binding:"omitempty,max=64"`
-	Status        string `json:"status" binding:"omitempty,oneof=on off"`
+	Images        []string `json:"images"`
+	Description   string   `json:"description"`
+	Origin        string   `json:"origin" binding:"omitempty,max=128"`
+	ShelfLife     string   `json:"shelf_life" binding:"omitempty,max=64"`
+	Status        string   `json:"status" binding:"omitempty,oneof=on off"`
 	IsNew         *bool  `json:"is_new"`
 	IsHot         *bool  `json:"is_hot"`
 	IsFeatured    *bool  `json:"is_featured"`
@@ -56,7 +56,7 @@ type CreateReviewRequest struct {
 	ProductID uint   `json:"product_id" binding:"required"`
 	Score     int    `json:"score" binding:"required,min=1,max=5"`
 	Content   string `json:"content" binding:"omitempty,max=500"`
-	Images    string `json:"images"`
+	Images    []string `json:"images"`
 }
 
 type ListReviewRequest struct {

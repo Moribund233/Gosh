@@ -1,7 +1,10 @@
 package product
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 	"gosh/internal/dto/request"
@@ -10,6 +13,7 @@ import (
 	repo "gosh/internal/repository/product"
 	reviewRepo "gosh/internal/repository/review"
 	searchRepo "gosh/internal/repository/search"
+	"gosh/pkg/cache"
 )
 
 var (
@@ -72,6 +76,9 @@ func (s *service) Create(req *request.CreateProductRequest) (*response.ProductRe
 	if err := s.repo.Create(product, skus); err != nil {
 		return nil, err
 	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), fmt.Sprintf("cache:product:%d", product.ID))
+	}
 	resp := response.ToProductResponse(product)
 	resp.SKUs = response.ToSKUList(skus)
 	return &resp, nil
@@ -103,7 +110,7 @@ func (s *service) Update(id uint, req *request.UpdateProductRequest) (*response.
 	if req.Tags != "" {
 		product.Tags = req.Tags
 	}
-	if req.Images != "" {
+	if len(req.Images) > 0 {
 		product.Images = req.Images
 	}
 	if req.Description != "" {
@@ -130,6 +137,9 @@ func (s *service) Update(id uint, req *request.UpdateProductRequest) (*response.
 	if err := s.repo.Update(product); err != nil {
 		return nil, err
 	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), fmt.Sprintf("cache:product:%d", product.ID))
+	}
 	skus, _ := s.repo.FindSKUsByProductID(product.ID)
 	resp := response.ToProductResponse(product)
 	resp.SKUs = response.ToSKUList(skus)
@@ -137,6 +147,27 @@ func (s *service) Update(id uint, req *request.UpdateProductRequest) (*response.
 }
 
 func (s *service) GetByID(id uint) (*response.ProductResponse, error) {
+	c := cache.Default()
+	if c != nil {
+		var result response.ProductResponse
+		key := fmt.Sprintf("cache:product:%d", id)
+		err := c.Remember(context.Background(), key, 10*time.Minute, func() (interface{}, error) {
+			product, err := s.repo.FindByID(id)
+			if err != nil {
+				return nil, err
+			}
+			resp := response.ToProductResponse(product)
+			resp.SKUs = response.ToSKUList(product.SKUs)
+			return &resp, nil
+		}, &result)
+		if err == nil {
+			return &result, nil
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+	}
+
 	product, err := s.repo.FindByID(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -211,12 +242,24 @@ func (s *service) Delete(id uint) error {
 	if _, err := s.repo.FindByID(id); err != nil {
 		return ErrProductNotFound
 	}
-	return s.repo.Delete(id)
+	if err := s.repo.Delete(id); err != nil {
+		return err
+	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), fmt.Sprintf("cache:product:%d", id))
+	}
+	return nil
 }
 
 func (s *service) UpdateStatus(id uint, status string) error {
 	if _, err := s.repo.FindByID(id); err != nil {
 		return ErrProductNotFound
 	}
-	return s.repo.UpdateStatus(id, status)
+	if err := s.repo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+	if c := cache.Default(); c != nil {
+		c.Del(context.Background(), fmt.Sprintf("cache:product:%d", id))
+	}
+	return nil
 }

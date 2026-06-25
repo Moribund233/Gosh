@@ -42,7 +42,7 @@ func createTestProductWithStock(t *testing.T, stock int) (uint, uint) {
 		Name:       "测试商品",
 		Price:      2990,
 		Status:     model.ProductStatusOn,
-		Images:     "http://example.com/img.jpg",
+		Images:     []string{"http://example.com/img.jpg"},
 	}
 	database.DB.Create(product)
 	sku := &model.ProductSKU{

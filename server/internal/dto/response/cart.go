@@ -16,6 +16,7 @@ type CartItemResponse struct {
 	Image       string `json:"image"`
 	Price       int64  `json:"price"`
 	Stock       int    `json:"stock"`
+	MaxBuyable  int    `json:"max_buyable"`
 	ProductID   uint   `json:"product_id"`
 	ProductOn   bool   `json:"product_on"`
 	CreatedAt   string `json:"created_at"`

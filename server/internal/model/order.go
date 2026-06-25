@@ -30,6 +30,7 @@ type Order struct {
 	CancelledAt    *time.Time `json:"cancelled_at"`
 	CancelReason   string     `gorm:"size:128" json:"cancel_reason"`
 	PointsDeducted int        `gorm:"default:0" json:"points_deducted"`
+	CreatedAt      time.Time  `gorm:"index" json:"created_at"`
 	Version        int        `gorm:"default:0" json:"version"`
 	Items          []OrderItem `gorm:"foreignKey:OrderID" json:"items,omitempty"`
 }
@@ -37,7 +38,7 @@ type Order struct {
 type OrderItem struct {
 	BaseModel
 	OrderID     uint   `gorm:"index;not null" json:"order_id"`
-	SKUID       uint   `gorm:"not null" json:"sku_id"`
+	SKUID       uint   `gorm:"index;not null" json:"sku_id"`
 	ProductName string `gorm:"size:128;not null" json:"product_name"`
 	SKUName     string `gorm:"size:64" json:"sku_name"`
 	Image       string `gorm:"size:256" json:"image"`

@@ -12,6 +12,6 @@ type CreateCouponRequest struct {
 }
 
 type CalculateCouponRequest struct {
-	OrderAmount int64 `json:"order_amount" binding:"required,min=0"`
-	CouponID    uint  `json:"coupon_id" binding:"required"`
+	OrderAmount int64  `json:"order_amount" binding:"required,min=0"`
+	CouponID    *uint  `json:"coupon_id,omitempty"`
 }

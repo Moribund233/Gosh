@@ -1,6 +1,7 @@
 package order
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -36,7 +37,7 @@ type Service interface {
 	Pay(userID, orderID uint) error
 	Ship(orderID uint) error
 	Confirm(userID, orderID uint) error
-	Rebuy(userID, orderID uint) error
+	Rebuy(userID, orderID uint) (*response.RebuyResponse, error)
 	ApplyPoints(userID, orderID uint, req *request.ApplyPointsRequest) error
 }
 
@@ -64,16 +65,31 @@ func (s *service) Create(userID uint, req *request.CreateOrderRequest, idempoten
 	// 幂等检查
 	existing, err := s.orderRepo.FindIdempotency(idempotentKey)
 	if err == nil && existing != nil {
-		var resp response.OrderResponse
-		return &resp, nil
+		if existing.Response != "" {
+			var resp response.OrderResponse
+			if err := json.Unmarshal([]byte(existing.Response), &resp); err == nil {
+				return &resp, nil
+			}
+		}
 	}
 
-	carts, err := s.cartRepo.FindSelectedByUserID(userID)
-	if err != nil {
-		return nil, err
-	}
-	if len(carts) == 0 {
-		return nil, ErrCartEmpty
+	var carts []model.Cart
+	if len(req.Items) > 0 {
+		for _, item := range req.Items {
+			carts = append(carts, model.Cart{
+				SKUID:    item.SKUID,
+				Quantity: item.Quantity,
+				Selected: true,
+			})
+		}
+	} else {
+		carts, err = s.cartRepo.FindSelectedByUserID(userID)
+		if err != nil {
+			return nil, err
+		}
+		if len(carts) == 0 {
+			return nil, ErrCartEmpty
+		}
 	}
 
 	// 获取默认地址
@@ -84,7 +100,9 @@ func (s *service) Create(userID uint, req *request.CreateOrderRequest, idempoten
 
 	var order *model.Order
 
-	err = database.DB.Transaction(func(tx *gorm.DB) error {
+	tx, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	err = tx.Transaction(func(tx *gorm.DB) error {
 		// 记录幂等键
 		if err := tx.Create(&model.IdempotencyRecord{Key: idempotentKey}).Error; err != nil {
 			return err
@@ -128,7 +146,7 @@ func (s *service) Create(userID uint, req *request.CreateOrderRequest, idempoten
 				SKUID:       sku.ID,
 				ProductName: product.Name,
 				SKUName:     sku.Name,
-				Image:       product.Images,
+				Image:       firstImage(product.Images),
 				Price:       sku.Price,
 				Quantity:    cart.Quantity,
 				Subtotal:    subtotal,
@@ -164,9 +182,11 @@ func (s *service) Create(userID uint, req *request.CreateOrderRequest, idempoten
 			}
 		}
 
-		// 清空已购购物车
-		if err := tx.Where("user_id = ? AND selected = ?", userID, true).Delete(&model.Cart{}).Error; err != nil {
-			return err
+		// 清空已购购物车 (only when items came from cart)
+		if len(req.Items) == 0 {
+			if err := tx.Where("user_id = ? AND selected = ?", userID, true).Delete(&model.Cart{}).Error; err != nil {
+				return err
+			}
 		}
 
 		// 审计日志
@@ -193,6 +213,15 @@ func (s *service) Create(userID uint, req *request.CreateOrderRequest, idempoten
 		return nil, err
 	}
 	resp := response.ToOrderResponse(fullOrder)
+
+	// Store response for idempotency
+	respJSON, err := json.Marshal(resp)
+	if err == nil {
+		database.DB.Model(&model.IdempotencyRecord{}).
+			Where("key = ?", idempotentKey).
+			Update("response", string(respJSON))
+	}
+
 	return &resp, nil
 }
 
@@ -239,42 +268,47 @@ func (s *service) Cancel(userID, orderID uint, req *request.CancelOrderRequest) 
 		return ErrInvalidOrderStatus
 	}
 
-	return database.DB.Transaction(func(tx *gorm.DB) error {
-		// 更新订单状态
-		res := tx.Model(&model.Order{}).
-			Where("id = ? AND version = ?", order.ID, order.Version).
-			Updates(map[string]interface{}{
-				"status":        model.OrderStatusCancelled,
-				"cancelled_at":  time.Now(),
-				"cancel_reason": req.Reason,
-				"version":       order.Version + 1,
-			})
-		if res.RowsAffected == 0 {
-			return ErrInvalidOrderStatus
-		}
+	txCtl, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	return txCtl.Transaction(func(tx *gorm.DB) error {
+			// 更新订单状态
+			res := tx.Model(&model.Order{}).
+				Where("id = ? AND version = ? AND status = ?", order.ID, order.Version, model.OrderStatusPendingPayment).
+				Updates(map[string]interface{}{
+					"status":        model.OrderStatusCancelled,
+					"cancelled_at":  time.Now(),
+					"cancel_reason": req.Reason,
+					"version":       order.Version + 1,
+				})
+			if res.RowsAffected == 0 {
+				return ErrInvalidOrderStatus
+			}
 
-		// 恢复库存
-		var items []model.OrderItem
-		if err := tx.Where("order_id = ?", order.ID).Find(&items).Error; err != nil {
-			return err
-		}
-		for _, item := range items {
-			if err := tx.Model(&model.ProductSKU{}).
-				Where("id = ?", item.SKUID).
-				Update("stock", gorm.Expr("stock + ?", item.Quantity)).Error; err != nil {
+			// 恢复库存
+			var items []model.OrderItem
+			if err := tx.Where("order_id = ?", order.ID).Find(&items).Error; err != nil {
 				return err
 			}
-		}
+			for _, item := range items {
+				if err := tx.Model(&model.ProductSKU{}).
+					Where("id = ?", item.SKUID).
+					Updates(map[string]interface{}{
+						"stock":   gorm.Expr("stock + ?", item.Quantity),
+						"version": gorm.Expr("version + 1"),
+					}).Error; err != nil {
+					return err
+				}
+			}
 
-		// 审计日志
-		return tx.Create(&model.OrderLog{
-			OrderID:    order.ID,
-			FromStatus: model.OrderStatusPendingPayment,
-			ToStatus:   model.OrderStatusCancelled,
-			Operator:   fmt.Sprintf("user:%d", userID),
-			Note:       req.Reason,
-		}).Error
-	})
+			// 审计日志
+			return tx.Create(&model.OrderLog{
+				OrderID:    order.ID,
+				FromStatus: model.OrderStatusPendingPayment,
+				ToStatus:   model.OrderStatusCancelled,
+				Operator:   fmt.Sprintf("user:%d", userID),
+				Note:       req.Reason,
+			}).Error
+		})
 }
 
 func (s *service) Pay(userID, orderID uint) error {
@@ -289,26 +323,28 @@ func (s *service) Pay(userID, orderID uint) error {
 		return ErrInvalidOrderStatus
 	}
 
-	return database.DB.Transaction(func(tx *gorm.DB) error {
-		now := time.Now()
-		res := tx.Model(&model.Order{}).
-			Where("id = ? AND version = ? AND status = ?", order.ID, order.Version, model.OrderStatusPendingPayment).
-			Updates(map[string]interface{}{
-				"status":   model.OrderStatusPendingDelivery,
-				"paid_at":  now,
-				"version":  order.Version + 1,
-			})
-		if res.RowsAffected == 0 {
-			return ErrInvalidOrderStatus
-		}
-		return tx.Create(&model.OrderLog{
-			OrderID:    order.ID,
-			FromStatus: model.OrderStatusPendingPayment,
-			ToStatus:   model.OrderStatusPendingDelivery,
-			Operator:   fmt.Sprintf("user:%d", userID),
-			Note:       "支付成功",
-		}).Error
-	})
+	tx, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	return tx.Transaction(func(tx *gorm.DB) error {
+			now := time.Now()
+			res := tx.Model(&model.Order{}).
+				Where("id = ? AND version = ? AND status = ?", order.ID, order.Version, model.OrderStatusPendingPayment).
+				Updates(map[string]interface{}{
+					"status":   model.OrderStatusPendingDelivery,
+					"paid_at":  now,
+					"version":  order.Version + 1,
+				})
+			if res.RowsAffected == 0 {
+				return ErrInvalidOrderStatus
+			}
+			return tx.Create(&model.OrderLog{
+				OrderID:    order.ID,
+				FromStatus: model.OrderStatusPendingPayment,
+				ToStatus:   model.OrderStatusPendingDelivery,
+				Operator:   fmt.Sprintf("user:%d", userID),
+				Note:       "支付成功",
+			}).Error
+		})
 }
 
 func (s *service) Ship(orderID uint) error {
@@ -320,7 +356,9 @@ func (s *service) Ship(orderID uint) error {
 		return ErrInvalidOrderStatus
 	}
 
-	return database.DB.Transaction(func(tx *gorm.DB) error {
+	txShip, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	return txShip.Transaction(func(tx *gorm.DB) error {
 		now := time.Now()
 		res := tx.Model(&model.Order{}).
 			Where("id = ? AND version = ?", order.ID, order.Version).
@@ -354,7 +392,9 @@ func (s *service) Confirm(userID, orderID uint) error {
 		return ErrInvalidOrderStatus
 	}
 
-	return database.DB.Transaction(func(tx *gorm.DB) error {
+	txConfirm, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	return txConfirm.Transaction(func(tx *gorm.DB) error {
 		now := time.Now()
 		res := tx.Model(&model.Order{}).
 			Where("id = ? AND version = ?", order.ID, order.Version).
@@ -376,54 +416,114 @@ func (s *service) Confirm(userID, orderID uint) error {
 	})
 }
 
-func (s *service) Rebuy(userID, orderID uint) error {
+func (s *service) Rebuy(userID, orderID uint) (*response.RebuyResponse, error) {
 	order, err := s.orderRepo.FindByID(orderID)
 	if err != nil {
-		return ErrOrderNotFound
+		return nil, ErrOrderNotFound
 	}
 	if order.UserID != userID {
-		return ErrOrderNotBelongToUser
+		return nil, ErrOrderNotBelongToUser
 	}
 	if order.Status != model.OrderStatusCompleted {
-		return ErrInvalidOrderStatus
+		return nil, ErrInvalidOrderStatus
 	}
 
 	var items []model.OrderItem
 	if err := database.DB.Where("order_id = ?", order.ID).Find(&items).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	var skipped []string
+	skuIDs := make([]uint, len(items))
+	for i, item := range items {
+		skuIDs[i] = item.SKUID
+	}
+
+	var skus []model.ProductSKU
+	if err := database.DB.Where("id IN ?", skuIDs).Find(&skus).Error; err != nil {
+		return nil, err
+	}
+	skuMap := make(map[uint]model.ProductSKU, len(skus))
+	for _, sku := range skus {
+		skuMap[sku.ID] = sku
+	}
+
+	productIDs := make([]uint, 0)
+	productIDSet := make(map[uint]bool)
+	for _, sku := range skus {
+		if !productIDSet[sku.ProductID] {
+			productIDs = append(productIDs, sku.ProductID)
+			productIDSet[sku.ProductID] = true
+		}
+	}
+
+	var products []model.Product
+	if err := database.DB.Select("id, name, status").Where("id IN ?", productIDs).Find(&products).Error; err != nil {
+		return nil, err
+	}
+	productStatus := make(map[uint]string, len(products))
+	productNames := make(map[uint]string, len(products))
+	for _, p := range products {
+		productStatus[p.ID] = p.Status
+		productNames[p.ID] = p.Name
+	}
+
+	var skipped []response.SkippedItem
+	cartItems := make([]response.CartItemResponse, 0)
 	for _, item := range items {
-		var sku model.ProductSKU
-		if err := database.DB.First(&sku, item.SKUID).Error; err != nil {
-			skipped = append(skipped, item.ProductName)
+		sku, ok := skuMap[item.SKUID]
+		if !ok {
+			skipped = append(skipped, response.SkippedItem{
+				SKUID:  item.SKUID,
+				Name:   item.ProductName,
+				Reason: "商品已删除",
+			})
 			continue
 		}
-		var product model.Product
-		if err := database.DB.First(&product, sku.ProductID).Error; err != nil || product.Status != model.ProductStatusOn {
-			skipped = append(skipped, item.ProductName)
+		if productStatus[sku.ProductID] != model.ProductStatusOn {
+			skipped = append(skipped, response.SkippedItem{
+				SKUID:  item.SKUID,
+				Name:   productNames[sku.ProductID],
+				Reason: "商品已下架",
+			})
 			continue
 		}
 
 		var existingCart model.Cart
 		err := database.DB.Where("user_id = ? AND sku_id = ?", userID, item.SKUID).First(&existingCart).Error
 		if err == nil {
-			database.DB.Model(&existingCart).Update("quantity", item.Quantity)
+			if err := database.DB.Model(&existingCart).Update("quantity", item.Quantity).Error; err != nil {
+				return nil, err
+			}
 		} else {
-			database.DB.Create(&model.Cart{
+			if err := database.DB.Create(&model.Cart{
 				UserID:   userID,
 				SKUID:    item.SKUID,
 				Quantity: item.Quantity,
 				Selected: true,
-			})
+			}).Error; err != nil {
+				return nil, err
+			}
 		}
+
+		cartItems = append(cartItems, response.CartItemResponse{
+			SKUID:       item.SKUID,
+			Quantity:    item.Quantity,
+			Price:       sku.Price,
+			Stock:       sku.Stock,
+			SKUName:     sku.Name,
+			ProductID:   sku.ProductID,
+			ProductName: productNames[sku.ProductID],
+			ProductOn:   productStatus[sku.ProductID] == model.ProductStatusOn,
+		})
 	}
 
-	if len(skipped) > 0 {
-		return fmt.Errorf("部分商品已下架，已跳过: %v", skipped)
-	}
-	return nil
+	return &response.RebuyResponse{
+		Cart: response.CartListResponse{
+			Items:      cartItems,
+			TotalCount: len(cartItems),
+		},
+		SkippedItems: skipped,
+	}, nil
 }
 
 func (s *service) ApplyPoints(userID, orderID uint, req *request.ApplyPointsRequest) error {
@@ -438,7 +538,9 @@ func (s *service) ApplyPoints(userID, orderID uint, req *request.ApplyPointsRequ
 		return ErrInvalidOrderStatus
 	}
 
-	return database.DB.Transaction(func(tx *gorm.DB) error {
+	txPoints, cancel := database.WithTimeout(database.DefaultTimeout)
+	defer cancel()
+	return txPoints.Transaction(func(tx *gorm.DB) error {
 		var user model.User
 		if err := tx.Select("points").First(&user, userID).Error; err != nil {
 			return err
@@ -503,4 +605,11 @@ func checksum(s string) string {
 		sum += int(c)
 	}
 	return fmt.Sprintf("%02d", sum%100)
+}
+
+func firstImage(images []string) string {
+	if len(images) > 0 {
+		return images[0]
+	}
+	return ""
 }

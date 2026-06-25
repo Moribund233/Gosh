@@ -42,6 +42,22 @@ type OrderItemResponse struct {
 	Subtotal    int64  `json:"subtotal"`
 }
 
+type RebuyResponse struct {
+	Cart         CartListResponse `json:"cart"`
+	SkippedItems []SkippedItem    `json:"skipped_items"`
+}
+
+type SkippedItem struct {
+	SKUID  uint   `json:"sku_id"`
+	Name   string `json:"name"`
+	Reason string `json:"reason"`
+}
+
+type CartListResponse struct {
+	Items      []CartItemResponse `json:"items"`
+	TotalCount int                `json:"total_count"`
+}
+
 type AddressSnapshot struct {
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`

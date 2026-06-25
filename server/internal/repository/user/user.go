@@ -54,6 +54,6 @@ func (r *repo) ListByRole(role string, page, size int) ([]model.User, int64, err
 	}
 	query.Count(&total)
 	offset := (page - 1) * size
-	err := query.Offset(offset).Limit(size).Find(&users).Error
+	err := query.Order("id asc").Offset(offset).Limit(size).Find(&users).Error
 	return users, total, err
 }
