@@ -1,0 +1,100 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": { "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/search/search",
+      "style": { "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/category/category",
+      "style": { "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/login/login",
+      "style": { "navigationBarTitleText": "登录" }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": { "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/address/address",
+      "style": { "navigationBarTitleText": "收货地址" }
+    },
+    {
+      "path": "pages/address-edit/address-edit",
+      "style": { "navigationBarTitleText": "编辑地址" }
+    },
+    {
+      "path": "pages/coupon/coupon",
+      "style": { "navigationBarTitleText": "我的优惠券" }
+    },
+    {
+      "path": "pages/points/points",
+      "style": { "navigationBarTitleText": "我的积分" }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages/sub-package-product",
+      "pages": [
+        {
+          "path": "product/product",
+          "style": { "navigationStyle": "custom" }
+        }
+      ]
+    },
+    {
+      "root": "pages/sub-package-order",
+      "pages": [
+        {
+          "path": "cart/cart",
+          "style": { "navigationStyle": "custom" }
+        },
+        {
+          "path": "checkout/checkout",
+          "style": { "navigationBarTitleText": "确认订单" }
+        },
+        {
+          "path": "orders/orders",
+          "style": { "navigationBarTitleText": "我的订单" }
+        }
+      ]
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "谷穗",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f7f8f5"
+  },
+  "tabBar": {
+    "color": "#9a9c98",
+    "selectedColor": "#5b8c5a",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/category/category",
+        "text": "分类",
+        "iconPath": "static/tabbar/category.png",
+        "selectedIconPath": "static/tabbar/category-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/tabbar/mine.png",
+        "selectedIconPath": "static/tabbar/mine-active.png"
+      }
+    ]
+  }
+}

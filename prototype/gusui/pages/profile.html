@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>谷穗 · 个人中心</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .profile-header {
+      background: linear-gradient(180deg, var(--accent-light) 0%, var(--surface) 100%);
+      padding: var(--sp-8) var(--sp-4) var(--sp-6);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+    .profile-header .avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .profile-header .info { flex: 1; }
+    .profile-header .info .name { font-size: var(--fs-display); font-weight: 700; margin-bottom: 4px; }
+    .profile-header .info .detail { font-size: var(--fs-caption); color: var(--muted); }
+
+    .order-stats {
+      display: flex;
+      background: var(--surface);
+      padding: var(--sp-4) 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .order-stats a {
+      flex: 1;
+      text-align: center;
+      text-decoration: none;
+      color: var(--fg);
+    }
+    .order-stats .stat-icon { font-size: 22px; margin-bottom: 4px; }
+    .order-stats .stat-label { font-size: var(--fs-small); color: var(--muted); }
+
+    .menu-group {
+      background: var(--surface);
+      margin-top: var(--sp-3);
+      border-radius: var(--radius-md);
+    }
+    .menu-group:first-of-type { margin-top: 0; }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: var(--sp-3) var(--sp-4);
+      border-bottom: 1px solid var(--border-soft);
+      gap: var(--sp-3);
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item .m-icon { font-size: 20px; width: 24px; text-align: center; }
+    .menu-item .m-label { flex: 1; font-size: var(--fs-body); }
+    .menu-item .m-arrow { color: var(--meta); font-size: var(--fs-body); }
+    .menu-item .m-badge {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: var(--fs-small);
+      padding: 1px 8px;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="page-container">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="14" height="14" rx="2"/><line x1="6" y1="10" x2="20" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <span class="title">个人中心</span>
+        <span class="right-action" style="font-size:var(--fs-caption);color:var(--muted);">设置</span>
+      </div>
+
+      <div class="content">
+        <!-- 用户信息 -->
+        <div class="profile-header">
+          <div class="avatar">穗</div>
+          <div class="info">
+            <div class="name">谷穗用户</div>
+            <div class="detail">会员ID: 100086 · 注册于 2025.12</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <!-- 我的订单 -->
+        <div style="background:var(--surface);margin-top:var(--sp-3);border-radius:var(--radius-md);">
+          <a href="orders.html" style="display:flex;align-items:center;padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border-soft);">
+            <span style="font-size:var(--fs-body);font-weight:600;flex:1;">我的订单</span>
+            <span style="font-size:var(--fs-caption);color:var(--muted);">查看全部 &gt;</span>
+          </a>
+          <div class="order-stats">
+            <a href="orders.html">
+              <div class="stat-icon">📋</div>
+              <div class="stat-label">待付款</div>
+            </a>
+            <a href="orders.html">
+              <div class="stat-icon">📦</div>
+              <div class="stat-label">待发货</div>
+            </a>
+            <a href="orders.html">
+              <div class="stat-icon">🚚</div>
+              <div class="stat-label">待收货</div>
+            </a>
+            <a href="orders.html">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-label">待评价</div>
+            </a>
+            <a href="orders.html">
+              <div class="stat-icon">🔁</div>
+              <div class="stat-label">退换</div>
+            </a>
+          </div>
+        </div>
+
+        <!-- 功能菜单组 -->
+        <div class="menu-group" style="margin-top:var(--sp-3);">
+          <div class="menu-item">
+            <span class="m-icon">📍</span>
+            <span class="m-label">收货地址</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+          <div class="menu-item">
+            <span class="m-icon">💳</span>
+            <span class="m-label">我的卡券</span>
+            <span class="m-badge">3张</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+          <div class="menu-item">
+            <span class="m-icon">❤️</span>
+            <span class="m-label">我的收藏</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+          <div class="menu-item">
+            <span class="m-icon">👣</span>
+            <span class="m-label">浏览记录</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+        </div>
+
+        <div class="menu-group" style="margin-top:var(--sp-3);margin-bottom:var(--sp-6);">
+          <div class="menu-item">
+            <span class="m-icon">🎁</span>
+            <span class="m-label">积分商城</span>
+            <span class="m-badge">1280分</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+          <div class="menu-item">
+            <span class="m-icon">📞</span>
+            <span class="m-label">联系客服</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+          <div class="menu-item">
+            <span class="m-icon">⚙️</span>
+            <span class="m-label">设置</span>
+            <span class="m-arrow">&gt;</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <a href="home.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+          <span>首页</span>
+        </a>
+        <a href="category.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>分类</span>
+        </a>
+        <a href="cart.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span class="badge">3</span>
+          <span>购物车</span>
+        </a>
+        <a href="profile.html" class="tab-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>我的</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

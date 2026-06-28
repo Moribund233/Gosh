@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>谷穗 · 商品详情</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .product-gallery {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: linear-gradient(135deg, var(--accent-light), #d4e8d0);
+      display: grid;
+      place-items: center;
+      font-size: 64px;
+      position: relative;
+    }
+    .gallery-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+    }
+    .gallery-dots span {
+      width: 6px; height: 6px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.2);
+    }
+    .gallery-dots span.active { width: 18px; background: var(--accent); }
+
+    .product-meta { padding: var(--sp-4); }
+    .product-meta .title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: var(--sp-2);
+    }
+    .product-meta .sub { font-size: var(--fs-caption); color: var(--muted); margin-bottom: var(--sp-3); }
+    .price-block {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-3);
+    }
+    .price-block .now {
+      font-family: var(--font-price);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--price);
+    }
+    .price-block .now .sym { font-size: 14px; }
+    .price-block .old {
+      font-size: var(--fs-caption);
+      color: var(--meta);
+      text-decoration: line-through;
+    }
+    .price-block .sales {
+      font-size: var(--fs-caption);
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .promo-tags {
+      display: flex;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-3);
+    }
+    .promo-tag {
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .promo-tag.warm { background: var(--warm-soft); color: #b88940; }
+
+    .spec-section { padding: var(--sp-4); border-top: 8px solid var(--surface-2); }
+    .spec-section .label { font-size: var(--fs-caption); color: var(--fg-soft); margin-bottom: var(--sp-3); font-weight: 500; }
+    .spec-options { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+    .spec-opt {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-caption);
+      color: var(--fg-soft);
+      transition: all 0.15s;
+    }
+    .spec-opt.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .detail-section { padding: var(--sp-4); border-top: 8px solid var(--surface-2); }
+    .detail-section h3 {
+      font-size: var(--fs-body);
+      font-weight: 600;
+      margin-bottom: var(--sp-3);
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-2);
+    }
+    .detail-item .key { font-size: var(--fs-caption); color: var(--muted); }
+    .detail-item .val { font-size: var(--fs-body); color: var(--fg); }
+
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border-soft);
+      padding: 0 var(--sp-3);
+      gap: var(--sp-2);
+    }
+    .bottom-bar .icon-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      font-size: 10px;
+      color: var(--muted);
+      min-width: 44px;
+    }
+    .bottom-bar .icon-btn svg { width: 22px; height: 22px; }
+    .bottom-bar .spacer { flex: 1; }
+    .bottom-bar .btn-cart {
+      padding: 10px var(--sp-5);
+      background: var(--accent-hover);
+      color: #fff;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-body);
+      font-weight: 600;
+    }
+    .bottom-bar .btn-buy {
+      padding: 10px var(--sp-5);
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-body);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="page-container">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="14" height="14" rx="2"/><line x1="6" y1="10" x2="20" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <a href="javascript:history.back()" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <span class="title">商品详情</span>
+        <a href="#" class="right-action" style="color:var(--fg-soft);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 9l5 5 5-5M12 14V4"/></svg>
+        </a>
+      </div>
+
+      <div class="content">
+        <!-- 商品图片 -->
+        <div class="product-gallery">🌾</div>
+
+        <!-- 商品信息 -->
+        <div class="product-meta">
+          <div class="title">东北五常稻花香大米 5kg · 当季新米</div>
+          <div class="sub">产地：黑龙江·五常 | 保质期：12个月 | 已售 1.2万+</div>
+
+          <div class="price-block">
+            <span class="now"><span class="sym">¥</span>49.9</span>
+            <span class="old">¥69.0</span>
+            <span class="sales">月销 1.2万+</span>
+          </div>
+
+          <div class="promo-tags">
+            <span class="promo-tag">满99减20</span>
+            <span class="promo-tag">新人首单减10</span>
+            <span class="promo-tag warm">产地直发</span>
+          </div>
+        </div>
+
+        <!-- 规格选择 -->
+        <div class="spec-section">
+          <div class="label">规格</div>
+          <div class="spec-options">
+            <span class="spec-opt selected">5kg / 袋装</span>
+            <span class="spec-opt">2.5kg / 袋装</span>
+            <span class="spec-opt">10kg / 礼盒装</span>
+          </div>
+        </div>
+
+        <!-- 数量 -->
+        <div class="spec-section" style="border-top:1px solid var(--border-soft);padding-top:var(--sp-3);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="label" style="margin:0;">数量</span>
+            <div class="qty-selector">
+              <button id="qtyMinus">−</button>
+              <span class="qty-num" id="qtyDisplay">1</span>
+              <button id="qtyPlus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 商品详情 -->
+        <div class="detail-section">
+          <h3>商品信息</h3>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="key">品牌</span><div class="val">谷穗优选</div></div>
+            <div class="detail-item"><span class="key">产地</span><div class="val">黑龙江·五常</div></div>
+            <div class="detail-item"><span class="key">净含量</span><div class="val">5kg</div></div>
+            <div class="detail-item"><span class="key">保质期</span><div class="val">12个月</div></div>
+            <div class="detail-item"><span class="key">储存方式</span><div class="val">阴凉干燥处</div></div>
+            <div class="detail-item"><span class="key">包装</span><div class="val">真空袋装</div></div>
+          </div>
+        </div>
+
+        <!-- 评价 -->
+        <div class="detail-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-3);">
+            <h3 style="margin:0;">用户评价</h3>
+            <span class="more" style="font-size:var(--fs-caption);">查看全部</span>
+          </div>
+          <div style="background:var(--surface-2);padding:var(--sp-3);border-radius:var(--radius-md);margin-bottom:var(--sp-3);">
+            <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2);">
+              <span style="font-size:var(--fs-caption);font-weight:600;">张**</span>
+              <span style="font-size:11px;color:var(--muted);">3天前</span>
+              <span style="margin-left:auto;color:var(--warn);">★★★★★</span>
+            </div>
+            <p style="font-size:var(--fs-caption);color:var(--fg-soft);">米很香，煮出来有那种小时候的米油味，真空包装也很好。已经回购第三次了。</p>
+            <div style="display:flex;gap:6px;margin-top:var(--sp-2);">
+              <span class="promo-tag" style="font-size:10px;">口感好</span>
+              <span class="promo-tag" style="font-size:10px;">包装严实</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 推荐 -->
+        <div style="padding:0 var(--sp-4) var(--sp-8);">
+          <h3 style="font-size:var(--fs-body);font-weight:600;margin-bottom:var(--sp-3);">你可能还喜欢</h3>
+          <div class="scroll-x" style="padding:0;">
+            <div class="product-card" style="width:130px;">
+              <div class="img-placeholder">🫘</div>
+              <div class="info">
+                <div class="name" style="font-size:13px;">东北红小豆</div>
+                <div class="price-row">
+                  <span class="price" style="font-size:14px;">¥12.8</span>
+                </div>
+              </div>
+            </div>
+            <div class="product-card" style="width:130px;">
+              <div class="img-placeholder">🍄</div>
+              <div class="info">
+                <div class="name" style="font-size:13px;">云南香菇 200g</div>
+                <div class="price-row">
+                  <span class="price" style="font-size:14px;">¥28.6</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部操作栏 -->
+      <div class="bottom-bar">
+        <a href="home.html" class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+          <span>首页</span>
+        </a>
+        <a href="cart.html" class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span>购物车</span>
+        </a>
+        <div class="spacer"></div>
+        <button class="btn-cart" onclick="showToast('已加入购物车')">加入购物车</button>
+        <a href="checkout.html" class="btn-buy">立即购买</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 数量选择
+    const minus = document.getElementById('qtyMinus');
+    const plus = document.getElementById('qtyPlus');
+    const display = document.getElementById('qtyDisplay');
+    let qty = 1;
+    minus.addEventListener('click', () => { if (qty > 1) { qty--; display.textContent = qty; } });
+    plus.addEventListener('click', () => { qty++; display.textContent = qty; });
+
+    // 规格选择
+    document.querySelectorAll('.spec-opt').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.spec-opt').forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    // Toast
+    function showToast(msg) {
+      let t = document.getElementById('_toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = '_toast';
+        t.className = 'toast show';
+        document.querySelector('.page-container').appendChild(t);
+      }
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    }
+  </script>
+</body>
+</html>

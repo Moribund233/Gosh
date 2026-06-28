@@ -1,0 +1,56 @@
+/* 品牌色 */
+$accent: #5b8c5a;
+$accent-light: #e8f0e6;
+$accent-hover: #4d7a4c;
+
+/* 背景色 */
+$bg: #f7f8f5;
+$surface: #ffffff;
+$surface-2: #f0f2ed;
+
+/* 前景色 */
+$fg: #2c2e2c;
+$fg-soft: #555755;
+$muted: #9a9c98;
+$meta: #bcbeb9;
+
+/* 边框 */
+$border: #e5e7e3;
+$border-soft: #eef0eb;
+
+/* 功能色 */
+$danger: #d9534f;
+$warn: #f0ad4e;
+$warm: #d4a76a;
+
+/* 字号 */
+$fs-display: 22px;
+$fs-title: 18px;
+$fs-body: 14px;
+$fs-caption: 12px;
+$fs-small: 11px;
+
+/* 间距（4px 网格）*/
+$sp-1: 4px;
+$sp-2: 8px;
+$sp-3: 12px;
+$sp-4: 16px;
+$sp-5: 20px;
+$sp-6: 24px;
+$sp-8: 32px;
+$sp-10: 40px;
+
+/* 圆角 */
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-full: 9999px;
+
+/* uni-app 内置变量覆盖 */
+$uni-color-primary: $accent;
+$uni-bg-color: $surface;
+$uni-bg-color-grey: $bg;
+$uni-text-color: $fg;
+$uni-text-color-grey: $muted;
+$uni-border-color: $border;

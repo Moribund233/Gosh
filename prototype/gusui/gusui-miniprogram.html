@@ -1,0 +1,306 @@
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>谷穗 · 干杂货线上平台 — 小程序原型</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(180deg, #f0f4ed 0%, #f7f8f5 100%);
+      min-height: 100vh;
+      padding: 40px 24px 60px;
+      color: #2c2e2c;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .header .brand {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #5b8c5a;
+    }
+    .header .brand-sub {
+      font-size: 14px;
+      color: #9a9c98;
+      margin-top: 4px;
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    .header p {
+      font-size: 14px;
+      color: #9a9c98;
+      margin-top: 6px;
+      max-width: 440px;
+      margin-inline: auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .card .preview {
+      aspect-ratio: 375 / 812;
+      background: #f7f8f5;
+      display: grid;
+      place-items: center;
+      color: #bcbeb9;
+      font-size: 13px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card .info {
+      padding: 14px 16px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card .info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .card .info p {
+      font-size: 12px;
+      color: #9a9c98;
+      line-height: 1.4;
+      flex: 1;
+    }
+    .card .info .tag {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 10px;
+      background: #e8f0e6;
+      color: #5b8c5a;
+      font-size: 11px;
+      border-radius: 999px;
+      align-self: flex-start;
+    }
+    .card .preview .phone-silhouette {
+      width: 80%;
+      height: 85%;
+      border-radius: 20px;
+      background: #fff;
+      border: 2px solid #e5e7e3;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .phone-silhouette .mock-status {
+      height: 16px;
+      background: #fff;
+      border-bottom: 1px solid #eef0eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-size: 7px;
+      color: #9a9c98;
+    }
+    .phone-silhouette .mock-nav {
+      height: 18px;
+      background: #fff;
+      border-bottom: 1px solid #eef0eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 600;
+      color: #2c2e2c;
+    }
+    .phone-silhouette .mock-body {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+    .phone-silhouette .mock-tab {
+      height: 18px;
+      background: #fff;
+      border-top: 1px solid #eef0eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 8px;
+      font-size: 6px;
+      color: #bcbeb9;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 13px;
+      color: #bcbeb9;
+    }
+    .footer a { color: #5b8c5a; }
+    .badge-new {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #5b8c5a;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">谷穗</div>
+    <div class="brand-sub">Suì Lì · 原产地干杂货</div>
+    <h1>微信小程序原型 · 8 个核心页面</h1>
+    <p>清新干净的视觉风格，柔和自然绿色品牌色，真实干杂货电商体验</p>
+  </div>
+
+  <div class="grid">
+    <a class="card" href="pages/home.html" target="_blank">
+      <div class="preview">
+        <span class="badge-new">主页</span>
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav">谷穗</div>
+          <div class="mock-body">🏠</div>
+          <div class="mock-tab"><span style="color:#5b8c5a;">首页</span><span>分类</span><span>购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>首页</h3>
+        <p>Banner 轮播、热门分类、精选推荐、限时秒杀</p>
+        <span class="tag">首页 · 推荐流</span>
+      </div>
+    </a>
+    <a class="card" href="pages/search.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav">搜索</div>
+          <div class="mock-body">🔍</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span>购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>搜索</h3>
+        <p>搜索框、热门搜索标签、搜索结果列表</p>
+        <span class="tag">搜索 · 发现</span>
+      </div>
+    </a>
+    <a class="card" href="pages/category.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav">商品分类</div>
+          <div class="mock-body">📂</div>
+          <div class="mock-tab"><span>首页</span><span style="color:#5b8c5a;">分类</span><span>购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>商品分类</h3>
+        <p>左侧分类列表 + 右侧商品网格，双栏浏览</p>
+        <span class="tag">分类 · 浏览</span>
+      </div>
+    </a>
+    <a class="card" href="pages/product.html" target="_blank">
+      <div class="preview">
+        <span class="badge-new">详情</span>
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav"><span style="position:absolute;left:10px;">←</span>商品详情</div>
+          <div class="mock-body">🌾</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span style="color:#5b8c5a;">购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>商品详情</h3>
+        <p>商品大图、价格、规格选择、加入购物车</p>
+        <span class="tag">详情 · 购买</span>
+      </div>
+    </a>
+    <a class="card" href="pages/cart.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav">购物车</div>
+          <div class="mock-body">🛒</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span style="color:#5b8c5a;">购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>购物车</h3>
+        <p>已选商品列表、数量增减、总计金额、结算按钮</p>
+        <span class="tag">购物车 · 结算</span>
+      </div>
+    </a>
+    <a class="card" href="pages/checkout.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav"><span style="position:absolute;left:10px;">←</span>确认订单</div>
+          <div class="mock-body">📋</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span>购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>结算页</h3>
+        <p>收货地址、商品明细、优惠券、支付方式、提交订单</p>
+        <span class="tag">结算 · 下单</span>
+      </div>
+    </a>
+    <a class="card" href="pages/orders.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav"><span style="position:absolute;left:10px;">←</span>我的订单</div>
+          <div class="mock-body">📦</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span>购物车</span><span>我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>订单列表</h3>
+        <p>全部/待付款/待发货/待收货/已完成标签切换、订单卡片</p>
+        <span class="tag">订单 · 状态</span>
+      </div>
+    </a>
+    <a class="card" href="pages/profile.html" target="_blank">
+      <div class="preview">
+        <div class="phone-silhouette">
+          <div class="mock-status"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="mock-nav">个人中心</div>
+          <div class="mock-body">👤</div>
+          <div class="mock-tab"><span>首页</span><span>分类</span><span>购物车</span><span style="color:#5b8c5a;">我的</span></div>
+        </div>
+      </div>
+      <div class="info">
+        <h3>个人中心</h3>
+        <p>用户信息、订单入口、地址管理、设置</p>
+        <span class="tag">我的 · 账户</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>谷穗 · 小程序原型 · <a href="pages/home.html">进入首页</a></p>
+  </div>
+</body>
+</html>

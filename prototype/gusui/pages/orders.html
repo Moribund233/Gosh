@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>谷穗 · 我的订单</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .order-tabs {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-soft);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .order-tabs .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 13px;
+      color: var(--fg-soft);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .order-tabs .tab.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+
+    .order-card {
+      background: var(--surface);
+      margin: var(--sp-3) var(--sp-4);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .order-card .order-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-3) var(--sp-3) 0;
+      font-size: var(--fs-caption);
+      color: var(--fg-soft);
+    }
+    .order-card .order-hd .store {
+      font-weight: 500;
+      color: var(--fg);
+    }
+    .order-card .order-hd .status {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .order-card .order-hd .status.delivered { color: var(--muted); }
+    .order-card .order-body {
+      display: flex;
+      gap: var(--sp-3);
+      padding: var(--sp-3);
+      align-items: center;
+    }
+    .order-card .order-body .thumb {
+      width: 64px; height: 64px;
+      border-radius: var(--radius-sm);
+      display: grid; place-items: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .order-card .order-body .info { flex: 1; min-width: 0; }
+    .order-card .order-body .info .name {
+      font-size: var(--fs-body);
+      font-weight: 500;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-card .order-body .info .spec {
+      font-size: var(--fs-small);
+      color: var(--muted);
+    }
+    .order-card .order-body .info .qty {
+      font-size: var(--fs-caption);
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .order-card .order-body .amount {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .order-card .order-body .amount .total {
+      font-weight: 600;
+      font-size: var(--fs-body);
+    }
+    .order-card .order-body .amount .total .sym { font-size: 12px; }
+    .order-card .order-body .amount .count {
+      font-size: var(--fs-small);
+      color: var(--muted);
+    }
+    .order-card .order-ft {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-3) var(--sp-3);
+      border-top: 1px solid var(--border-soft);
+    }
+    .order-card .order-ft .btn-sm {
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--fs-caption);
+      color: var(--fg-soft);
+      background: transparent;
+      transition: all 0.15s;
+    }
+    .order-card .order-ft .btn-sm:active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .order-card .order-ft .btn-sm.primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .order-card .order-ft .btn-sm.primary:active { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="page-container">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="5" width="14" height="14" rx="2"/><line x1="6" y1="10" x2="20" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <a href="profile.html" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <span class="title">我的订单</span>
+      </div>
+
+      <div class="content">
+        <!-- 订单状态标签 -->
+        <div class="order-tabs">
+          <span class="tab active">全部</span>
+          <span class="tab">待付款</span>
+          <span class="tab">待发货</span>
+          <span class="tab">待收货</span>
+          <span class="tab">已完成</span>
+        </div>
+
+        <!-- 订单卡片 1 -->
+        <div class="order-card">
+          <div class="order-hd">
+            <span class="store">谷穗优选</span>
+            <span class="status">待发货</span>
+          </div>
+          <div class="order-body">
+            <div class="thumb" style="background:var(--accent-light);">🌾</div>
+            <div class="info">
+              <div class="name">东北五常稻花香大米 5kg</div>
+              <div class="spec">5kg / 袋装 | 1件</div>
+              <div class="qty">下单时间：2026-06-25 14:30</div>
+            </div>
+            <div class="amount">
+              <div class="total"><span class="sym">¥</span>49.9</div>
+            </div>
+          </div>
+          <div class="order-ft">
+            <button class="btn-sm">取消订单</button>
+            <button class="btn-sm primary">提醒发货</button>
+          </div>
+        </div>
+
+        <!-- 订单卡片 2 -->
+        <div class="order-card">
+          <div class="order-hd">
+            <span class="store">谷穗优选</span>
+            <span class="status delivered">已完成</span>
+          </div>
+          <div class="order-body">
+            <div class="thumb" style="background:var(--warm-soft);">🍄</div>
+            <div class="info">
+              <div class="name">云南高山香菇 250g</div>
+              <div class="spec">250g / 袋装 | 2件</div>
+              <div class="qty">下单时间：2026-06-20 09:15</div>
+            </div>
+            <div class="amount">
+              <div class="total"><span class="sym">¥</span>70.0</div>
+            </div>
+          </div>
+          <div class="order-ft">
+            <button class="btn-sm">查看物流</button>
+            <button class="btn-sm primary">再次购买</button>
+          </div>
+        </div>
+
+        <!-- 订单卡片 3 -->
+        <div class="order-card">
+          <div class="order-hd">
+            <span class="store">谷穗优选</span>
+            <span class="status">待收货</span>
+          </div>
+          <div class="order-body">
+            <div class="thumb" style="background:#e8e8e0;">🫘</div>
+            <div class="info">
+              <div class="name">东北有机黑豆 500g</div>
+              <div class="spec">500g / 袋装 | 1件</div>
+              <div class="qty">下单时间：2026-06-22 16:45</div>
+            </div>
+            <div class="amount">
+              <div class="total"><span class="sym">¥</span>8.9</div>
+            </div>
+          </div>
+          <div class="order-ft">
+            <button class="btn-sm">查看物流</button>
+            <button class="btn-sm primary">确认收货</button>
+          </div>
+        </div>
+
+        <!-- 订单卡片 4 -->
+        <div class="order-card" style="margin-bottom:var(--sp-8);">
+          <div class="order-hd">
+            <span class="store">谷穗优选</span>
+            <span class="status delivered">待评价</span>
+          </div>
+          <div class="order-body">
+            <div class="thumb" style="background:var(--accent-light);">🌶️</div>
+            <div class="info">
+              <div class="name">四川二荆条干辣椒 250g</div>
+              <div class="spec">250g / 袋装 | 3件</div>
+              <div class="qty">下单时间：2026-06-18 11:20</div>
+            </div>
+            <div class="amount">
+              <div class="total"><span class="sym">¥</span>29.7</div>
+            </div>
+          </div>
+          <div class="order-ft">
+            <button class="btn-sm primary">立即评价</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <a href="home.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+          <span>首页</span>
+        </a>
+        <a href="category.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>分类</span>
+        </a>
+        <a href="cart.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+          <span class="badge">3</span>
+          <span>购物车</span>
+        </a>
+        <a href="profile.html" class="tab-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>我的</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 订单标签切换
+    document.querySelectorAll('.order-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.order-tabs .tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
