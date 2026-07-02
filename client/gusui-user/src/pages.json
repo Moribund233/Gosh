@@ -1,4 +1,10 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^tui-(.*)": "thorui-uni/lib/thorui/tui-$1/tui-$1.vue"
+    }
+  },
   "pages": [
     {
       "path": "pages/index/index",
@@ -17,6 +23,10 @@
       "style": { "navigationBarTitleText": "登录" }
     },
     {
+      "path": "pages/login/register",
+      "style": { "navigationBarTitleText": "注册" }
+    },
+    {
       "path": "pages/profile/profile",
       "style": { "navigationStyle": "custom" }
     },
@@ -31,6 +41,10 @@
     {
       "path": "pages/coupon/coupon",
       "style": { "navigationBarTitleText": "我的优惠券" }
+    },
+    {
+      "path": "pages/cart/cart",
+      "style": { "navigationStyle": "custom" }
     },
     {
       "path": "pages/points/points",
@@ -51,10 +65,6 @@
       "root": "pages/sub-package-order",
       "pages": [
         {
-          "path": "cart/cart",
-          "style": { "navigationStyle": "custom" }
-        },
-        {
           "path": "checkout/checkout",
           "style": { "navigationBarTitleText": "确认订单" }
         },
@@ -65,12 +75,6 @@
       ]
     }
   ],
-  "globalStyle": {
-    "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "谷穗",
-    "navigationBarBackgroundColor": "#ffffff",
-    "backgroundColor": "#f7f8f5"
-  },
   "tabBar": {
     "color": "#9a9c98",
     "selectedColor": "#5b8c5a",
@@ -90,11 +94,23 @@
         "selectedIconPath": "static/tabbar/category-active.png"
       },
       {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "static/tabbar/cart.png",
+        "selectedIconPath": "static/tabbar/cart-active.png"
+      },
+      {
         "pagePath": "pages/profile/profile",
         "text": "我的",
         "iconPath": "static/tabbar/mine.png",
         "selectedIconPath": "static/tabbar/mine-active.png"
       }
     ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "谷穗",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f7f8f5"
   }
 }

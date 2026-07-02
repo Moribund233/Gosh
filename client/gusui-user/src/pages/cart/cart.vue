@@ -1,11 +1,6 @@
 <template>
   <view class="cart-page">
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-
     <view class="nav-bar">
-      <view class="back-btn" @tap="goBack">
-        <tui-icon name="arrowleft" size="40" color="#2c2e2c"></tui-icon>
-      </view>
       <text class="nav-title">购物车</text>
       <view class="nav-right">
         <text class="nav-action" @tap="toggleEdit">{{ isEdit ? '完成' : '管理' }}</text>
@@ -69,16 +64,16 @@
         结算 ({{ selectedCount }})
       </view>
     </view>
+    <AppTabbar :current="2" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import AppTabbar from '@/components/AppTabbar.vue'
 import { getCartList, updateCartQuantity, toggleCartItem, toggleCartAll, removeCartItem, type CartItem } from '@/services/cart'
 import { getProducts, type Product } from '@/services/product'
 import { formatPrice } from '@/utils/format'
-
-const statusBarHeight = ref(uni.getStorageSync('statusBarHeight') || 44)
 
 const items = ref<CartItem[]>([])
 const recommends = ref<Product[]>([])
@@ -163,10 +158,6 @@ function goCheckout() {
   uni.navigateTo({ url: '/pages/sub-package-order/checkout/checkout' })
 }
 
-function goBack() {
-  uni.navigateBack()
-}
-
 function goHome() {
   uni.switchTab({ url: '/pages/index/index' })
 }
@@ -184,8 +175,6 @@ function navigateToProduct(id: number) {
   flex-direction: column;
 }
 
-.status-bar { background: #ffffff; }
-
 .nav-bar {
   height: 88rpx;
   display: flex;
@@ -195,18 +184,6 @@ function navigateToProduct(id: number) {
   padding: 0 32rpx;
   position: relative;
   border-bottom: 1rpx solid #eef0eb;
-}
-
-.back-btn {
-  position: absolute;
-  left: 16rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .nav-title {

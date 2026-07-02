@@ -45,72 +45,72 @@
 
 | # | 任务 | 文件 | 状态 |
 |---|------|------|------|
-| 1.1 | 安装 ThorUI（npm + easycom 配置） | `pages.json`, `package.json` | ⬜ |
-| 1.2 | 配置环境变量（dev/prod BASE_URL） | `vite.config.ts`, `.env` | ⬜ |
-| 1.3 | 创建 Auth Store（token 管理、登录态） | `src/stores/auth.ts` | ⬜ |
-| 1.4 | 创建 User Store（用户信息） | `src/stores/user.ts` | ⬜ |
-| 1.5 | 创建 Cart Store（购物车状态） | `src/stores/cart.ts` | ⬜ |
-| 1.6 | 登录页 UI + API 对接 | `pages/login/login.vue` | ⬜ |
-| 1.7 | 注册页 UI + API 对接 | `pages/login/register.vue` | ⬜ |
-| 1.8 | 全局导航守卫（未登录拦截 + Token 过期处理） | `App.vue` | ⬜ |
-| 1.9 | 安装 ThorUI `tui-icon`，替换 tabbar PNG 图标 | `pages.json` | ⬜ |
+| 1.1 | 安装 ThorUI（npm + easycom 配置） | `pages.json`, `package.json` | ✅ |
+| 1.2 | 配置环境变量（dev/prod BASE_URL） | `vite.config.ts`, `.env` | ✅ |
+| 1.3 | 创建 Auth Store（token 管理、登录态） | `src/stores/auth.ts` | ✅ |
+| 1.4 | 创建 User Store（用户信息） | `src/stores/user.ts` | ✅ |
+| 1.5 | 创建 Cart Store（购物车状态） | `src/stores/cart.ts` | ✅ |
+| 1.6 | 登录页 UI + API 对接 | `pages/login/login.vue` | ✅ |
+| 1.7 | 注册页 UI + API 对接 | `pages/login/register.vue` | ✅ |
+| 1.8 | 全局导航守卫（未登录拦截 + Token 过期处理） | `App.vue` | ✅ |
+| 1.9 | 安装 ThorUI `tui-icon`，替换 tabbar PNG 图标 | `pages.json` | ✅ |
 
 ### Phase 2 — 首页 & 发现
 
 | # | 任务 | 文件 | 状态 |
 |---|------|------|------|
-| 2.1 | 首页 — 轮播 Banner | `pages/index/index.vue` | ⬜ |
-| 2.2 | 首页 — 品牌故事卡片 | `pages/index/index.vue` | ⬜ |
-| 2.3 | 首页 — 快捷菜单（4项入口） | `pages/index/index.vue` | ⬜ |
-| 2.4 | 首页 — 秒杀倒计时 + 横向滚动 | `pages/index/index.vue` | ⬜ |
-| 2.5 | 首页 — 商品瀑布流（2列网格） | `pages/index/index.vue` | ⬜ |
-| 2.6 | 分类页 — 左侧分类树 | `pages/category/category.vue` | ⬜ |
-| 2.7 | 分类页 — 右侧子分类网格 + Banner | `pages/category/category.vue` | ⬜ |
-| 2.8 | 搜索页 — 搜索栏 | `pages/search/search.vue` | ⬜ |
-| 2.9 | 搜索页 — 历史搜索 + 热门搜索 | `pages/search/search.vue` | ⬜ |
-| 2.10 | 搜索页 — 搜索结果列表 | `pages/search/search.vue` | ⬜ |
+| 2.1 | 首页 — 轮播 Banner | `pages/index/index.vue` | ✅ |
+| 2.2 | 首页 — 品牌故事卡片 | `pages/index/index.vue` | ✅ |
+| 2.3 | 首页 — 快捷菜单（4项入口） | `pages/index/index.vue` | ✅ |
+| 2.4 | 首页 — 秒杀倒计时 + 横向滚动 | `pages/index/index.vue` | ✅ |
+| 2.5 | 首页 — 商品瀑布流（2列网格） | `pages/index/index.vue` | ✅ |
+| 2.6 | 分类页 — 左侧分类树 | `pages/category/category.vue` | ✅ |
+| 2.7 | 分类页 — 右侧子分类网格 + Banner | `pages/category/category.vue` | ✅ |
+| 2.8 | 搜索页 — 搜索栏 | `pages/search/search.vue` | ✅ |
+| 2.9 | 搜索页 — 历史搜索 + 热门搜索 | `pages/search/search.vue` | ✅ |
+| 2.10 | 搜索页 — 搜索结果列表 | `pages/search/search.vue` | ✅ |
 
 ### Phase 3 — 商品详情
 
 | # | 任务 | 文件 | 状态 |
 |---|------|------|------|
-| 3.1 | 商品详情 — 图片画廊 | `pages/sub-package-product/product/product.vue` | ⬜ |
-| 3.2 | 商品详情 — 价格/标题/标签 | `pages/sub-package-product/product/product.vue` | ⬜ |
-| 3.3 | 商品详情 — SKU 规格选择 | `pages/sub-package-product/product/product.vue` | ⬜ |
-| 3.4 | 商品详情 — 促销信息栏 | `pages/sub-package-product/product/product.vue` | ⬜ |
-| 3.5 | 商品详情 — 评价摘要 | `pages/sub-package-product/product/product.vue` | ⬜ |
-| 3.6 | 商品详情 — 底部操作栏（收藏/加购/立即购买） | `pages/sub-package-product/product/product.vue` | ⬜ |
+| 3.1 | 商品详情 — 图片画廊 | `pages/sub-package-product/product/product.vue` | ✅ |
+| 3.2 | 商品详情 — 价格/标题/标签 | `pages/sub-package-product/product/product.vue` | ✅ |
+| 3.3 | 商品详情 — SKU 规格选择 | `pages/sub-package-product/product/product.vue` | ✅ |
+| 3.4 | 商品详情 — 促销信息栏 | `pages/sub-package-product/product/product.vue` | ✅ |
+| 3.5 | 商品详情 — 评价摘要 | `pages/sub-package-product/product/product.vue` | ✅ |
+| 3.6 | 商品详情 — 底部操作栏（收藏/加购/立即购买） | `pages/sub-package-product/product/product.vue` | ✅ |
 
 ### Phase 4 — 购物车 & 结算
 
 | # | 任务 | 文件 | 状态 |
 |---|------|------|------|
-| 4.1 | 购物车 — 列表（勾选/数量/价格） | `pages/sub-package-order/cart/cart.vue` | ⬜ |
-| 4.2 | 购物车 — 推荐商品区 | `pages/sub-package-order/cart/cart.vue` | ⬜ |
-| 4.3 | 购物车 — 底部结算栏 | `pages/sub-package-order/cart/cart.vue` | ⬜ |
-| 4.4 | 地址管理 — 列表 | `pages/address/address.vue` | ⬜ |
-| 4.5 | 地址管理 — 新增/编辑 | `pages/address-edit/address-edit.vue` | ⬜ |
-| 4.6 | 结算页 — 地址选择 | `pages/sub-package-order/checkout/checkout.vue` | ⬜ |
-| 4.7 | 结算页 — 商品清单 | `pages/sub-package-order/checkout/checkout.vue` | ⬜ |
-| 4.8 | 结算页 — 优惠券选择 | `pages/sub-package-order/checkout/checkout.vue` | ⬜ |
-| 4.9 | 结算页 — 支付方式选择 | `pages/sub-package-order/checkout/checkout.vue` | ⬜ |
-| 4.10 | 结算页 — 订单备注 + 提交 | `pages/sub-package-order/checkout/checkout.vue` | ⬜ |
-| 4.11 | 订单创建（Idempotent-Key） | `services/order.ts`（新建） | ⬜ |
+| 4.1 | 购物车 — 列表（勾选/数量/价格） | `pages/sub-package-order/cart/cart.vue` | ✅ |
+| 4.2 | 购物车 — 推荐商品区 | `pages/sub-package-order/cart/cart.vue` | ✅ |
+| 4.3 | 购物车 — 底部结算栏 | `pages/sub-package-order/cart/cart.vue` | ✅ |
+| 4.4 | 地址管理 — 列表 | `pages/address/address.vue` | ✅ |
+| 4.5 | 地址管理 — 新增/编辑 | `pages/address-edit/address-edit.vue` | ✅ |
+| 4.6 | 结算页 — 地址选择 | `pages/sub-package-order/checkout/checkout.vue` | ✅ |
+| 4.7 | 结算页 — 商品清单 | `pages/sub-package-order/checkout/checkout.vue` | ✅ |
+| 4.8 | 结算页 — 优惠券选择 | `pages/sub-package-order/checkout/checkout.vue` | ✅ |
+| 4.9 | 结算页 — 支付方式选择 | `pages/sub-package-order/checkout/checkout.vue` | ✅ |
+| 4.10 | 结算页 — 订单备注 + 提交 | `pages/sub-package-order/checkout/checkout.vue` | ✅ |
+| 4.11 | 订单创建（Idempotent-Key） | `services/order.ts` | ✅ |
 
 ### Phase 5 — 用户中心
 
 | # | 任务 | 文件 | 状态 |
 |---|------|------|------|
-| 5.1 | 个人中心 — 用户信息头 | `pages/profile/profile.vue` | ⬜ |
-| 5.2 | 个人中心 — 订单统计（待付款/待发货/待收货/已完成/售后） | `pages/profile/profile.vue` | ⬜ |
-| 5.3 | 个人中心 — 工具栏（地址/优惠券/收藏/浏览记录） | `pages/profile/profile.vue` | ⬜ |
-| 5.4 | 个人中心 — 菜单组（会员/设置/关于） | `pages/profile/profile.vue` | ⬜ |
-| 5.5 | 订单列表 — 状态 Tab 切换 | `pages/sub-package-order/orders/orders.vue` | ⬜ |
-| 5.6 | 订单列表 — 订单卡片（状态/商品/操作按钮） | `pages/sub-package-order/orders/orders.vue` | ⬜ |
-| 5.7 | 订单操作（取消/付款/确认收货/再次购买） | `pages/sub-package-order/orders/orders.vue` | ⬜ |
-| 5.8 | 优惠券页面 | `pages/coupon/coupon.vue` | ⬜ |
-| 5.9 | 积分页面 | `pages/points/points.vue` | ⬜ |
-| 5.10 | 收藏/浏览记录（如需要） | `pages/profile/favorites.vue` 等 | ⬜ |
+| 5.1 | 个人中心 — 用户信息头 | `pages/profile/profile.vue` | ✅ |
+| 5.2 | 个人中心 — 订单统计（待付款/待发货/待收货/已完成/售后） | `pages/profile/profile.vue` | ✅ |
+| 5.3 | 个人中心 — 工具栏（地址/优惠券/收藏/浏览记录） | `pages/profile/profile.vue` | ✅ |
+| 5.4 | 个人中心 — 菜单组（会员/设置/关于） | `pages/profile/profile.vue` | ✅ |
+| 5.5 | 订单列表 — 状态 Tab 切换 | `pages/sub-package-order/orders/orders.vue` | ✅ |
+| 5.6 | 订单列表 — 订单卡片（状态/商品/操作按钮） | `pages/sub-package-order/orders/orders.vue` | ✅ |
+| 5.7 | 订单操作（取消/付款/确认收货/再次购买） | `pages/sub-package-order/orders/orders.vue` | ✅ |
+| 5.8 | 优惠券页面 | `pages/coupon/coupon.vue` | ✅ |
+| 5.9 | 积分页面 | `pages/points/points.vue` | ✅ |
+| 5.10 | 收藏/浏览记录（占位） | `pages/profile/profile.vue` | ⬜ |
 
 ---
 

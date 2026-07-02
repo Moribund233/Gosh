@@ -1,9 +1,43 @@
 <script setup lang="ts">
 import { onLaunch } from '@dcloudio/uni-app'
 
+const authPages = [
+  '/pages/address/address',
+  '/pages/address-edit/address-edit',
+  '/pages/coupon/coupon',
+  '/pages/points/points',
+  '/pages/cart/cart',
+]
+
+const subAuthPages = [
+  '/pages/sub-package-order/checkout/checkout',
+  '/pages/sub-package-order/orders/orders',
+]
+
 onLaunch(() => {
-  console.log('App Launch')
+  const token = uni.getStorageSync('token')
+  if (token) {
+    console.log('App Launch - 已登录')
+  }
+
+  uni.addInterceptor('navigateTo', { invoke: checkAuth })
+  uni.addInterceptor('redirectTo', { invoke: checkAuth })
+  uni.addInterceptor('switchTab', { invoke: checkAuth })
+  uni.addInterceptor('reLaunch', { invoke: checkAuth })
 })
+
+function checkAuth(args: { url: string }) {
+  const token = uni.getStorageSync('token')
+  const url = args.url.split('?')[0]
+
+  const needsAuth = authPages.some(p => url.startsWith(p)) ||
+    subAuthPages.some(p => url.startsWith(p))
+
+  if (needsAuth && !token) {
+    uni.navigateTo({ url: '/pages/login/login' })
+    return false
+  }
+}
 </script>
 
 <style>
@@ -15,7 +49,8 @@ page {
   line-height: 1.5;
 }
 
-/* 全局工具类 */
+uni-tabbar { display: none !important; }
+
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
